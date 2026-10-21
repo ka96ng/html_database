@@ -1,0 +1,2549 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>보건복지부 고시 모니터 (모바일)</title>
+<style>
+* { box-sizing: border-box; }
+:root{
+    --line:#d4d8de; --line-strong:#b4bcc6;
+    --ink:#1a1f26; --ink-soft:#5b6675; --ink-mute:#8a94a3;
+    --accent:#1F6FB2; --accent-soft:#e8f1f9; --accent-line:#9ec4e3;
+    --head:#eef1f5; --hover:#f4f7fa; --sel:#e8f1f9;
+}
+html,body{ height:100%; }
+body {
+    margin: 0;
+    font-family: "Pretendard","Malgun Gothic",-apple-system,"Segoe UI",sans-serif;
+    font-size: 14px; color: var(--ink); background: #eceff3;
+    -webkit-font-smoothing: antialiased;
+}
+.wrap{ max-width:1500px; margin:0 auto; padding:14px; height:100vh; display:flex; flex-direction:column; }
+.topbar {
+    padding: 14px 18px; border:1px solid var(--line);
+    background:#fff; border-radius:12px 12px 0 0;
+    display:flex; justify-content:space-between; align-items:center; gap:16px;
+    box-shadow:0 1px 0 rgba(0,0,0,.02);
+}
+.topbar .title { font-weight: 800; font-size: 17px; letter-spacing:-0.5px; display:flex; align-items:center; gap:10px; }
+.topbar .title .dot{ width:9px; height:9px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px var(--accent-soft); }
+.topbar .meta { color: var(--ink-soft); font-size: 12.5px; display:flex; gap:14px; align-items:center; }
+.topbar .meta b{ color:var(--ink); font-weight:700; }
+.app {
+    display: grid;
+    grid-template-columns: 190px 210px 330px 1fr;
+    flex:1; min-height:0;
+    border:1px solid var(--line); border-top:none;
+    background:#fff; border-radius:0 0 12px 12px; overflow:hidden;
+}
+.column { border-right: 1px solid var(--line); overflow-y: auto; background:#fff; }
+.column:last-child { border-right: none; }
+.column::-webkit-scrollbar{ width:9px; }
+.column::-webkit-scrollbar-thumb{ background:#cfd6de; border-radius:5px; border:2px solid #fff; }
+.column-title {
+    padding: 12px 14px; background: var(--head); color: var(--ink-soft);
+    font-weight: 700; font-size:12px; letter-spacing:0.4px; text-transform:uppercase;
+    border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 2;
+}
+.menu-item {
+    padding: 12px 14px; border-bottom: 1px solid var(--line); cursor: pointer;
+    line-height: 1.45; transition: background .12s;
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+}
+.menu-item:hover { background: var(--hover); }
+.menu-item.active {
+    background: var(--sel); color: var(--accent); font-weight: 700;
+    box-shadow: inset 3px 0 0 var(--accent);
+}
+.count-badge {
+    flex:none; min-width: 22px; padding: 1px 7px; font-size: 11px; font-weight: 700;
+    color: var(--ink-soft); background:#eef1f5; border:1px solid var(--line);
+    border-radius: 11px; text-align: center;
+}
+.menu-item.active .count-badge{ color:#fff; background:var(--accent); border-color:var(--accent); }
+.detail-item {
+    padding: 11px 14px; border-bottom: 1px solid var(--line); cursor: pointer;
+    line-height: 1.5; transition: background .12s;
+}
+.detail-item:hover { background: var(--hover); }
+.detail-item.active { background: var(--sel); box-shadow: inset 3px 0 0 var(--accent); }
+.detail-item .d-title{ font-weight:600; color:var(--ink); }
+.detail-item.active .d-title{ color:var(--accent); }
+.detail-item .d-meta { color: var(--ink-mute); font-size: 11.5px; margin-top:4px; display:flex; gap:8px; flex-wrap:wrap; }
+.chip{ display:inline-block; padding:1px 7px; border-radius:4px; font-size:11px; font-weight:600; border:1px solid var(--line); background:#f7f9fb; color:var(--ink-soft); }
+.chip.kind-제정{ background:#e9f7ee; border-color:#b7e3c6; color:#1f8a46; }
+.chip.kind-일부개정{ background:#eef3fb; border-color:#bcd4ee; color:#2767b5; }
+.chip.kind-전부개정{ background:#fdf0e8; border-color:#f1c9ab; color:#b5651d; }
+.chip.kind-폐지{ background:#fbecec; border-color:#eec0c0; color:#b53030; }
+.info-area { padding: 26px 30px; overflow-y:auto; }
+.info-head{ margin-bottom:20px; padding-bottom:14px; border-bottom:2px solid var(--ink); }
+.info-crumb{ font-size:12px; color:var(--ink-mute); margin-bottom:8px; }
+.info-crumb span{ color:var(--accent); font-weight:600; }
+.info-title { font-size: 19px; font-weight: 800; line-height:1.4; letter-spacing:-0.4px; }
+.info-table { width: 100%; border-collapse: collapse; font-size: 13.5px; border: 1px solid var(--line-strong); table-layout: fixed; }
+.info-table th { background: var(--head); color: var(--ink-soft); font-weight: 700; padding: 12px 14px; border: 1px solid var(--line); text-align: left; white-space: nowrap; width: 130px; vertical-align: top; }
+.info-table td { padding: 12px 14px; border: 1px solid var(--line); text-align: left; vertical-align: top; background:#fff; word-break: break-all; line-height: 1.7; }
+.info-table a { color: var(--accent); font-weight:600; text-decoration:none; }
+.info-table a:hover{ text-decoration:underline; }
+.btn-link{ display:inline-flex; align-items:center; gap:6px; padding:7px 13px; border:1px solid var(--accent-line); background:var(--accent-soft); color:var(--accent); border-radius:7px; font-weight:700; font-size:12.5px; text-decoration:none; }
+.btn-link:hover{ background:#dceaf6; }
+.intro-box{ background:#f8fafc; border:1px solid var(--line); border-left:3px solid var(--accent-line); border-radius:6px; padding:12px 14px; line-height:1.75; color:#2b3440; font-size:13px; }
+.att-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px; }
+.att-item{ display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--line); border-radius:7px; background:#fcfdfe; }
+.att-item:hover{ background:#f4f7fa; }
+.att-ext{ flex:none; width:38px; height:24px; border-radius:4px; font-size:10px; font-weight:800; color:#fff; display:flex; align-items:center; justify-content:center; letter-spacing:.3px; }
+.ext-hwpx,.ext-hwp{ background:#2b6cb0; }
+.ext-pdf{ background:#c0392b; }
+.ext-xlsx,.ext-xls{ background:#1e7a46; }
+.ext-docx,.ext-doc{ background:#2a5699; }
+.ext-zip,.ext-etc{ background:#7a7f87; }
+.att-name{ flex:1; font-size:12.5px; color:var(--ink); font-weight:600; word-break:break-all; }
+.att-size{ flex:none; font-size:11.5px; color:var(--ink-mute); }
+.att-dl{ flex:none; font-size:11.5px; color:var(--accent); font-weight:700; text-decoration:none; padding:4px 9px; border:1px solid var(--accent-line); border-radius:5px; }
+.att-dl:hover{ background:var(--accent-soft); }
+.empty-message { padding: 40px 24px; color: var(--ink-mute); font-size:14px; text-align:center; }
+.empty-message .big{ font-size:34px; opacity:.35; display:block; margin-bottom:12px; }
+
+/* ===== 장기요양 급여비용 계산기 ===== */
+.calc-area{ padding:26px 30px; overflow-y:auto; }
+.calc-head{ margin-bottom:18px; padding-bottom:14px; border-bottom:2px solid var(--ink); }
+.calc-title{ font-size:19px; font-weight:800; letter-spacing:-0.4px; }
+.calc-sub{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; line-height:1.6; }
+.calc-sub b{ color:var(--ink); }
+.calc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
+@media(max-width:1100px){ .calc-grid{ grid-template-columns:1fr; } }
+.svc-card{ border:1px solid var(--line); border-radius:10px; background:#fcfdfe; padding:14px 16px; display:flex; flex-direction:column; gap:10px; }
+.svc-card.on{ border-color:var(--accent-line); background:var(--accent-soft); box-shadow:inset 0 0 0 1px var(--accent-line); }
+.svc-top{ display:flex; align-items:center; gap:9px; }
+.svc-top input[type=checkbox]{ width:17px; height:17px; accent-color:var(--accent); cursor:pointer; }
+.svc-name{ font-weight:800; font-size:14.5px; color:var(--ink); }
+.svc-tag{ flex:none; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:11px; background:#eef1f5; color:var(--ink-soft); border:1px solid var(--line); margin-left:auto; }
+.svc-tag.facility{ background:#fdf0e8; color:#b5651d; border-color:#f1c9ab; }
+.svc-rows{ display:flex; flex-direction:column; gap:8px; }
+.fld{ display:flex; flex-direction:column; gap:3px; }
+.fld label{ font-size:11.5px; color:var(--ink-soft); font-weight:600; }
+.fld select, .fld input[type=number]{ padding:7px 9px; border:1px solid var(--line-strong); border-radius:6px; font-size:13px; font-family:inherit; background:#fff; color:var(--ink); }
+.fld select:disabled, .fld input:disabled{ background:#f1f3f6; color:var(--ink-mute); }
+.svc-inline{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.svc-fee{ font-size:12px; color:var(--ink-soft); }
+.svc-fee b{ color:var(--accent); font-weight:800; }
+.calc-summary{ border:1px solid var(--line-strong); border-radius:10px; overflow:hidden; margin-top:6px; }
+.calc-summary table{ width:100%; border-collapse:collapse; font-size:13px; }
+.calc-summary th, .calc-summary td{ padding:10px 14px; border-bottom:1px solid var(--line); text-align:right; }
+.calc-summary th{ background:var(--head); color:var(--ink-soft); font-weight:700; text-align:right; }
+.calc-summary th:first-child, .calc-summary td:first-child{ text-align:left; }
+.calc-summary tr:last-child td{ border-bottom:none; }
+.calc-summary tr.total td{ background:var(--accent-soft); font-weight:800; color:var(--accent); font-size:14.5px; border-top:2px solid var(--accent-line); }
+.calc-summary tr.sub td{ color:var(--ink-soft); }
+.num{ font-variant-numeric:tabular-nums; }
+.btn-group{ display:flex; flex-wrap:wrap; gap:7px; }
+.opt-btn{ padding:8px 13px; border:1px solid var(--line-strong); border-radius:7px; background:#fff; color:var(--ink); font-size:12.5px; font-family:inherit; font-weight:600; cursor:pointer; transition:all .12s; white-space:nowrap; }
+.opt-btn:hover{ background:var(--hover); border-color:var(--accent-line); }
+.opt-btn.sel{ background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 1px 3px rgba(31,111,178,.3); }
+.opt-input{ width:110px; padding:8px 11px; border:1px solid var(--line-strong); border-radius:7px; font-size:12.5px; font-family:inherit; }
+.opt-input:disabled{ background:#f1f3f6; color:var(--ink-mute); }
+.freq-note{ font-size:11px; color:var(--ink-mute); margin-top:3px; }
+.calc-note{ margin-top:14px; font-size:11.5px; color:var(--ink-mute); line-height:1.7; }
+
+/* ===== 노인장기요양보험 등급판정 및 통합돌봄 전용 스타일 ===== */
+.sub-menu-item {
+    padding: 10px 14px 10px 26px; border-bottom: 1px solid var(--line); cursor: pointer;
+    line-height: 1.45; transition: background .12s; background: #fafbfc;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--ink-soft);
+}
+.sub-menu-item:hover { background: var(--hover); color: var(--accent); }
+.sub-menu-item.active {
+    background: var(--sel); color: var(--accent); font-weight: 700;
+    box-shadow: inset 4px 0 0 var(--accent);
+}
+.menu-item.has-sub { position: relative; }
+.menu-item.has-sub .toggle-badge {
+    font-size: 10.5px; font-weight: 700; color: var(--accent); background: var(--accent-soft);
+    padding: 2px 7px; border-radius: 4px; border: 1px solid var(--accent-line);
+}
+
+/* 도식화 플로우차트 컨테이너 */
+.proc-flow-container { display: flex; flex-direction: column; gap: 18px; margin-top: 14px; }
+.proc-hero {
+    background: linear-gradient(135deg, #f0f7fc 0%, #e8f1f9 100%);
+    border: 1px solid var(--accent-line); border-radius: 12px; padding: 18px 22px;
+}
+.proc-hero-title { font-size: 16px; font-weight: 800; color: var(--ink); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.proc-hero-title .pill { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; background: var(--accent); color: #fff; }
+.proc-hero-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+.proc-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; }
+.proc-summary-item { background: #fff; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 12px; }
+.proc-summary-item b { color: var(--accent); display: block; font-size: 11px; margin-bottom: 2px; }
+
+/* 클릭 가능한 가로 알고리즘 순서도 */
+.algorithm-flow-scroll{width:100%;overflow-x:auto;padding:4px 2px 10px}
+.algorithm-flow{display:grid;align-items:stretch;gap:14px 20px;margin:14px 0 4px}
+.algorithm-flow.care-flow{grid-template-columns:repeat(4,minmax(145px,1fr));min-width:740px}
+.algorithm-flow.grade-flow{grid-template-columns:repeat(3,minmax(150px,1fr));min-width:560px}
+.algorithm-node{position:relative;width:100%;min-height:72px;display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--line-strong);border-radius:10px;background:#fff;color:var(--ink);text-align:left;font:inherit;cursor:pointer;transition:all .15s ease}
+.algorithm-node:hover{border-color:var(--accent-line);background:#f7fbff}
+.algorithm-node.selected{border:2px solid var(--accent);background:var(--accent-soft);box-shadow:0 2px 8px rgba(31,111,178,.12)}
+.algorithm-node .step-num-badge{flex:0 0 30px}
+.algorithm-node-label{display:flex;flex-direction:column;gap:4px;min-width:0}
+.algorithm-node-label b{font-size:13px;line-height:1.35}
+.algorithm-node-label small{color:var(--ink-mute);font-size:11px;line-height:1.35}
+.algorithm-node::after{content:"→";position:absolute;right:-19px;top:50%;transform:translateY(-50%);z-index:1;color:var(--accent);font-size:18px;font-weight:800;pointer-events:none}
+.care-flow .algorithm-node:nth-child(4)::after,.grade-flow .algorithm-node:nth-child(3)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-24px;transform:translateX(-50%)}
+.care-flow .algorithm-node:nth-child(5),.care-flow .algorithm-node:nth-child(6),.care-flow .algorithm-node:nth-child(7){grid-row:2}
+.care-flow .algorithm-node:nth-child(5){grid-column:4}
+.care-flow .algorithm-node:nth-child(6){grid-column:3}
+.care-flow .algorithm-node:nth-child(7){grid-column:2}
+.care-flow .algorithm-node:nth-child(8){grid-column:1;grid-row:2}
+.care-flow .algorithm-node:nth-child(n+5):not(:nth-child(8))::after,.grade-flow .algorithm-node:nth-child(4)::after,.grade-flow .algorithm-node:nth-child(5)::after{content:"←";right:auto;left:-19px}
+.care-flow .algorithm-node:nth-child(8)::after,.grade-flow .algorithm-node:nth-child(6)::after{display:none}
+.grade-flow .algorithm-node:nth-child(4){grid-column:3;grid-row:2}
+.grade-flow .algorithm-node:nth-child(5){grid-column:2;grid-row:2}
+.grade-flow .algorithm-node:nth-child(6){grid-column:1;grid-row:2}
+.algorithm-detail{max-width:900px;margin:16px auto 0;padding:18px 20px;border:1px solid var(--accent-line);border-left:4px solid var(--accent);border-radius:10px;background:#f8fbfe}
+.algorithm-detail h3{margin:0 0 10px;font-size:16px;color:var(--ink)}
+.algorithm-detail p,.algorithm-detail li{font-size:13px;line-height:1.75;color:var(--ink-soft)}
+.algorithm-detail ul{margin:7px 0 0;padding-left:20px}
+.algorithm-supporting{margin-top:18px}
+@media(max-width:600px){.algorithm-detail{padding:15px}.algorithm-flow-scroll{margin-right:-4px}}
+
+/* 단계 카드 그리드 */
+.step-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+.step-card {
+    border: 1px solid var(--line); border-radius: 10px; background: #fff;
+    padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all .15s ease;
+    position: relative;
+}
+.step-card:hover {
+    border-color: var(--accent-line); box-shadow: 0 4px 12px rgba(31,111,178,0.09); transform: translateY(-2px);
+}
+.step-header { display: flex; align-items: center; justify-content: space-between; }
+.step-num-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%; background: var(--accent);
+    color: #fff; font-size: 12px; font-weight: 800;
+}
+.step-actor-tag {
+    font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+    background: var(--head); color: var(--ink-soft); border: 1px solid var(--line);
+}
+.step-actor-tag.citizen { background: #eaf5ea; color: #1e7a46; border-color: #b7e3c6; }
+.step-actor-tag.nhis { background: #e8f1f9; color: var(--accent); border-color: var(--accent-line); }
+.step-actor-tag.doctor { background: #fdf0e8; color: #b5651d; border-color: #f1c9ab; }
+.step-actor-tag.committee { background: #f3ebf9; color: #6b46c1; border-color: #d6bcfa; }
+.step-actor-tag.gov { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+
+.step-name { font-size: 15px; font-weight: 800; color: var(--ink); letter-spacing: -0.3px; }
+.step-body { font-size: 12.5px; color: var(--ink-soft); line-height: 1.65; }
+.step-bullets { margin: 6px 0 0; padding-left: 18px; color: var(--ink); font-size: 12px; line-height: 1.6; }
+.step-bullets li { margin-bottom: 2px; }
+.step-meta {
+    margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--line);
+    font-size: 11.5px; color: var(--ink-mute); display: flex; justify-content: space-between; align-items: center;
+}
+
+/* 탭 / 박스 섹션 */
+.section-block {
+    margin-top: 20px; padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: #fafbfc;
+}
+.section-block-title {
+    font-size: 14.5px; font-weight: 800; color: var(--ink); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+}
+
+/* 비교 카드 및 테이블 */
+.grade-badge {
+    display: inline-block; padding: 3px 9px; border-radius: 6px; font-size: 12px; font-weight: 800;
+}
+.grade-1 { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+.grade-2 { background: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
+.grade-3 { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+.grade-4 { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+.grade-5 { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+.grade-cogni { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+.spec-table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+.spec-table th { background: var(--head); color: var(--ink-soft); font-weight: 700; padding: 10px 12px; border: 1px solid var(--line); text-align: left; }
+.spec-table td { padding: 10px 12px; border: 1px solid var(--line); color: var(--ink); line-height: 1.5; }
+.spec-table tr:hover td { background: #f8fafc; }
+
+/* 5대 영역 카드 */
+.area-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 14px; margin-top: 14px; }
+.area-card {
+    border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 16px;
+    display: flex; flex-direction: column; gap: 8px; border-top: 4px solid var(--accent);
+}
+.area-card.cure { border-top-color: #1F6FB2; }
+.area-card.health { border-top-color: #10b981; }
+.area-card.ltc { border-top-color: #f59e0b; }
+.area-card.life { border-top-color: #8b5cf6; }
+.area-card.etc { border-top-color: #64748b; }
+.area-title { font-size: 14px; font-weight: 800; color: var(--ink); display: flex; align-items: center; justify-content: space-between; }
+.area-list { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-direction: column; gap: 6px; }
+.area-item { font-size: 12.5px; color: var(--ink); padding: 7px 11px; background: #f8fafc; border-radius: 6px; border: 1px solid #edf2f7; line-height: 1.55; }
+.area-item b { color: var(--accent); }
+
+/* ===== 알고리즘 순서도 스타일 ===== */
+.algo-container {
+    background: #f8fafc; border: 1px solid var(--line); border-radius: 12px;
+    padding: 22px 18px; margin: 16px 0; overflow-x: auto;
+}
+.algo-flow {
+    display: flex; flex-direction: column; align-items: center; gap: 10px; max-width: 900px; margin: 0 auto;
+}
+.algo-row {
+    display: flex; align-items: center; justify-content: center; gap: 14px; width: 100%; flex-wrap: wrap;
+}
+.algo-node {
+    cursor: pointer; transition: all .18s ease; position: relative; user-select: none;
+}
+.algo-node:hover {
+    transform: translateY(-2px);
+}
+.algo-node:hover .algo-box {
+    border-color: var(--accent); box-shadow: 0 4px 12px rgba(31,111,178,0.15);
+}
+.algo-node.selected .algo-box {
+    border-color: var(--accent) !important; background: var(--accent-soft) !important;
+    box-shadow: 0 0 0 3px rgba(31,111,178,0.3) !important;
+}
+.algo-box {
+    border: 2px solid var(--line-strong); background: #fff; border-radius: 8px;
+    padding: 10px 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+.algo-term {
+    border-radius: 24px; padding: 6px 18px; font-weight: 800; font-size: 11.5px;
+    background: #e2e8f0; border-color: #94a3b8; color: #334155;
+}
+.algo-proc {
+    min-width: 200px; max-width: 280px; text-align: left;
+}
+.algo-proc .num-tag {
+    display: inline-block; font-size: 10.5px; font-weight: 800; color: #fff; background: var(--accent);
+    padding: 1px 6px; border-radius: 4px; margin-bottom: 4px;
+}
+.algo-proc .title {
+    font-size: 13px; font-weight: 800; color: var(--ink); line-height: 1.4;
+}
+.algo-proc .sub {
+    font-size: 11px; color: var(--ink-soft); margin-top: 2px;
+}
+.algo-dec {
+    border-color: #f59e0b; background: #fffbeb; min-width: 220px; max-width: 320px;
+}
+.algo-dec .dec-tag {
+    display: inline-block; font-size: 10px; font-weight: 800; color: #b45309; background: #fde68a;
+    padding: 1px 6px; border-radius: 4px; margin-bottom: 3px;
+}
+.algo-dec .title {
+    font-size: 12.5px; font-weight: 800; color: #92400e;
+}
+.algo-dec .sub {
+    font-size: 11px; color: #b45309; margin-top: 2px;
+}
+.algo-arrow {
+    display: flex; flex-direction: column; align-items: center; color: var(--accent);
+    font-size: 15px; font-weight: 800; line-height: 1; margin: 2px 0;
+}
+.algo-arrow-lbl {
+    font-size: 10.5px; font-weight: 700; color: var(--ink-soft); background: #eef1f5;
+    padding: 1px 6px; border-radius: 4px; margin-bottom: 2px;
+}
+.algo-branches {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; width: 100%;
+}
+.algo-branch-item {
+    border: 1px solid var(--line); border-radius: 6px; background: #fff; padding: 8px;
+    text-align: center; font-size: 11.5px; cursor: pointer; transition: all .15s;
+}
+.algo-branch-item:hover {
+    border-color: var(--accent); background: var(--hover);
+}
+.algo-branch-item.selected {
+    border-color: var(--accent); background: var(--accent-soft); font-weight: 700;
+}
+
+/* 하단 상세 박스 */
+.step-detail-panel {
+    margin-top: 20px; border: 2px solid var(--accent-line); border-radius: 12px;
+    background: #fff; padding: 20px 24px; box-shadow: 0 4px 16px rgba(31,111,178,0.08);
+    animation: fadeIn .2s ease-in-out;
+}
+.step-detail-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 12px; margin-bottom: 14px; border-bottom: 2px solid var(--head);
+}
+.step-detail-title {
+    font-size: 16.5px; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 8px;
+}
+.step-detail-badge {
+    background: var(--accent); color: #fff; font-size: 11px; font-weight: 800;
+    padding: 3px 9px; border-radius: 10px;
+}
+.hint-banner {
+    background: #f0f7fc; border: 1px solid var(--accent-line); border-radius: 8px;
+    padding: 8px 12px; font-size: 12px; color: var(--accent); font-weight: 700;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+}
+
+
+/* ===== 모바일 화면 전용 레이아웃 ===== */
+@media (max-width: 760px) {
+  html, body { height:auto; min-height:100%; }
+  body { font-size:14px; overflow-x:hidden; }
+  .wrap { width:100%; max-width:none; height:auto; min-height:100vh; padding:8px; display:flex; flex-direction:column; }
+  .topbar { flex-direction:column; align-items:flex-start; gap:8px; padding:12px 14px; border-radius:10px 10px 0 0; }
+  .topbar .title { font-size:16px; line-height:1.35; }
+  .topbar .meta { width:100%; flex-wrap:wrap; gap:6px 12px; font-size:11.5px; }
+  .app { display:flex; flex:0 0 auto; min-height:0; flex-direction:column; overflow:visible; border-radius:0 0 10px 10px; }
+  .column { flex:0 0 auto; width:100%; max-height:clamp(96px, 17vh, 145px); overflow-x:hidden; overflow-y:auto; border-right:0; border-bottom:1px solid var(--line); }
+  .column-1 { max-height:clamp(112px, 19vh, 160px); }
+  .column-2, .column-3 { max-height:clamp(92px, 15vh, 132px); }
+  .column:last-child { border-bottom:0; max-height:none; overflow:visible; }
+  .column-title { position:sticky; top:0; padding:9px 12px; font-size:11px; z-index:4; }
+  .menu-item, .sub-menu-item, .detail-item { min-height:44px; padding-top:10px; padding-bottom:10px; }
+  .info-area, .calc-area { min-height:55vh; padding:18px 14px; overflow-x:auto; overflow-y:visible; }
+  .info-head { margin-bottom:15px; padding-bottom:11px; }
+  .info-title, .calc-title { font-size:17px; }
+  .info-crumb { font-size:11px; line-height:1.5; }
+  .info-table { min-width:540px; font-size:12.5px; }
+  .spec-table { min-width:560px; font-size:12px; }
+  .calc-summary table { min-width:560px; }
+  .section-block { padding:14px; margin-top:15px; overflow-x:auto; }
+  .section-block-title { font-size:13.5px; line-height:1.5; }
+  .proc-hero { padding:14px; }
+  .proc-hero-title { align-items:flex-start; flex-wrap:wrap; font-size:14.5px; }
+  .proc-hero-desc { font-size:12.5px; }
+  .proc-summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .proc-summary-item { padding:9px; font-size:11.5px; }
+  .algorithm-flow.care-flow { grid-template-columns:repeat(4,minmax(145px,1fr)); min-width:740px; }
+  .algorithm-flow.grade-flow { grid-template-columns:repeat(3,minmax(150px,1fr)); min-width:560px; }
+  .algorithm-node { min-height:68px; padding:9px; }
+  .algorithm-detail { margin-top:12px; padding:14px; }
+  .algorithm-detail p, .algorithm-detail li { font-size:12.5px; }
+  .step-grid, .area-grid { grid-template-columns:1fr; }
+  .calc-grid { grid-template-columns:1fr; gap:10px; }
+  .svc-inline { grid-template-columns:1fr; }
+  .btn-group { gap:6px; }
+  .opt-btn { min-height:40px; padding:8px 10px; white-space:normal; }
+  .opt-input { min-height:40px; max-width:100%; }
+  .att-item { align-items:flex-start; flex-wrap:wrap; padding:9px; }
+  .att-name { min-width:calc(100% - 55px); }
+  .att-size { margin-left:48px; }
+  .att-dl { margin-left:auto; }
+}
+@media (max-width: 380px) {
+  .wrap { padding:5px; }
+  .proc-summary-grid { grid-template-columns:1fr; }
+  .info-area, .calc-area { padding:15px 11px; }
+}
+
+
+.mobile-nav-columns { display:contents; }
+@media (max-width: 760px) {
+  .app { display:flex; flex-direction:column; overflow:visible; }
+  .mobile-nav-columns { display:block; width:100%; overflow:visible; }
+  .mobile-nav-columns > .column { display:block; width:100%; max-width:none; max-height:none; height:auto; overflow:visible; border:0; border-bottom:1px solid var(--line); }
+  .mobile-nav-columns > .column:last-child { border-right:0; }
+  .mobile-nav-columns .column-title { position:static; }
+  .mobile-drill-nav { display:none !important; }
+  .column-4 { display:block; flex:0 0 auto; width:100%; max-width:100%; min-width:0; max-height:none; overflow:visible; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="topbar">
+        <div class="title"><span class="dot"></span>보건복지부 고시 모니터 <small style="color:var(--ink-mute);font-size:11px;font-weight:600;">모바일</small></div>
+        <div class="meta" id="meta"></div>
+    </div>
+    <div class="app">
+        <div class="column column-1">
+            <div class="column-title">항목</div>
+            <div id="source-list"></div>
+        </div>
+        <div class="column column-2">
+            <div class="column-title">구분</div>
+            <div id="category-list"></div>
+        </div>
+        <div class="column column-3">
+            <div class="column-title">세부</div>
+            <div id="detail-list"></div>
+        </div>
+        <div class="column column-4">
+            <div class="column-title">내용</div>
+            <div id="information" class="info-area">
+                <div class="empty-message"><span class="big">📋</span>항목을 선택해주세요.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= DATA (자동 누적 영역 / 수정 금지) ================= -->
+<script id="dataset" type="application/json">
+[
+ {
+  "source": "welfare",
+  "category": "암·검진",
+  "title": "「암환자에 대한 의료비 지원기준 등에 관한 고시」일부개정",
+  "num": "2026-215호",
+  "kind": "일부개정",
+  "date": "2026-10-14",
+  "dept": "곽기홍",
+  "intro": "보건복지부고시 제 2026-215 호 「 암환자에 대한 의료비 지원기준 등에 관한 고시 」 를 다음과 같이 개정ㆍ발령합니다 . 2026 년 10 월 14 일 보건복지부장관",
+  "attachments": [
+   {
+    "name": "암환자에 대한 의료비 지원기준 등에 관한 고시 일부개정고시안.hwpx",
+    "size": "64.07KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492226&seq=1"
+   },
+   {
+    "name": "암환자에 대한 의료비 지원기준 등에 관한 고시 일부개정고시안.pdf",
+    "size": "329.59KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492226&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492226&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "암·검진",
+  "title": "「암검진 실시기준」고시 일부개정",
+  "num": "2026-214호",
+  "kind": "일부개정",
+  "date": "2026-10-14",
+  "dept": "곽기홍",
+  "intro": "보건복지부고시 제 2026-214 호 「 암검진 실시기준 」 을 다음과 같이 개정ㆍ발령합니다 . 2026 년 10 월 14 일 보건복지부장관",
+  "attachments": [
+   {
+    "name": "암검진 실시기준 일부개정고시안.hwpx",
+    "size": "46.01KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492225&seq=1"
+   },
+   {
+    "name": "암검진 실시기준 일부개정고시안.pdf",
+    "size": "172.59KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492225&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492225&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기관·운영",
+  "title": "「상급종합병원의 지정 및 평가 규정」고시 일부개정",
+  "num": "보건복지부 고시 제2026-213호",
+  "kind": "일부개정",
+  "date": "2026-10-14",
+  "dept": "박하나",
+  "intro": "「상급종합병원의 지정 및 평가 규정」고시를 다음과 같이 일부 개정·발령합니다.",
+  "attachments": [
+   {
+    "name": "(보건복지부 고시 제2026-213호, '26.10.14.) 상급종합병원의 지정 및 평가 규정 일부개정고시.hwpx",
+    "size": "46.45KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492224&seq=1"
+   },
+   {
+    "name": "(보건복지부 고시 제2026-213호, '26.10.14.) 상급종합병원의 지정 및 평가 규정 일부개정고시.pdf",
+    "size": "150.79KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492224&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492224&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기타",
+  "title": "「정신건강전문요원의 수련 및 보수교육 등에 관한 규정」 일부개정",
+  "num": "2026-212호",
+  "kind": "일부개정",
+  "date": "2026-10-13",
+  "dept": "김세현",
+  "intro": "보건복지부고시 제2026-212호 「정신건강전문요원의 수련 및 보수교육 등에 관한 규정」을 다음과 같이 개정ㆍ발령합니다 2026년 10월 13일 보건복지부장관",
+  "attachments": [
+   {
+    "name": "정신건강전문요원 수련 및 보수교육 등에 관한 규정 일부개정 고시안.hwpx",
+    "size": "45.5KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492209&seq=1"
+   },
+   {
+    "name": "정신건강전문요원 수련 및 보수교육 등에 관한 규정 일부개정 고시안.pdf",
+    "size": "163.77KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492209&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492209&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기관·운영",
+  "title": "「보건복지부 소속 국립병원 및 국립재활원의 전자의무기록시스템 구축·운영 사무 위탁에 관한 고시」제정",
+  "num": "고시: 2026-211호",
+  "kind": "제정",
+  "date": "2026-10-13",
+  "dept": "이충완",
+  "intro": "보건복지부고시 제2026-211호 「행정권한의 위임 및 위탁에 관한 규정」제52조제2항에 따라 「보건복지부 소속 국립병원 및 국립재활원의 전자의무기록시스템 구축 · 운영 사무 위탁에 관한 고시」를 다음과 같이 제정·고시합니다.",
+  "attachments": [
+   {
+    "name": "「보건복지부 소속 국립병원 및 국립재활원의 전자의무기록시스템 구축·운영 사무 위탁에 관한 고시」  전문.hwpx",
+    "size": "40.01KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492208&seq=1"
+   },
+   {
+    "name": "「보건복지부 소속 국립병원 및 국립재활원의 전자의무기록시스템 구축·운영 사무 위탁에 관한 고시」  전문.pdf",
+    "size": "113.2KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492208&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492208&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "신의료기술·디지털",
+  "title": "「평가 유예 신의료기술 고시」 일부개정",
+  "num": "제2026-210호",
+  "kind": "일부개정",
+  "date": "2026-10-08",
+  "dept": "민승철",
+  "intro": "보건복지부고시 제 2026 - 210 호 「 신의료기술평가에 관한 규칙 」 제 3 조제 5 항에 의한 「 평가 유예 신의료기술 고시 」 ( 보건복지부 고시 제 2026-171 호 , 2026. 8. 1 0 .) 를 다음과 같이 개정ㆍ발령합니다 . 2026 년 10 월 8 일 보건복지부장관",
+  "attachments": [
+   {
+    "name": "(2026년 6차) 「평가유예 신의료기술 고시」 일부개정(제2026-210호).hwpx",
+    "size": "46.92KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492184&seq=1"
+   },
+   {
+    "name": "(2026년 6차) 「평가유예 신의료기술 고시」 일부개정(제2026-210호).pdf",
+    "size": "287.08KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492184&seq=2"
+   },
+   {
+    "name": "(2026년 6차) 「평가 유예 신의료기술 고시」 전문(제2026-210호).hwpx",
+    "size": "142.14KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492184&seq=3"
+   },
+   {
+    "name": "(2026년 6차) 「평가 유예 신의료기술 고시」 전문(제2026-210호).pdf",
+    "size": "762.53KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492184&seq=4"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492184&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "신의료기술·디지털",
+  "title": "「신의료기술의 안전성·유효성 평가결과 고시」 일부개정",
+  "num": "제2026-209호",
+  "kind": "일부개정",
+  "date": "2026-10-08",
+  "dept": "민승철",
+  "intro": "보건복지부고시 제 2026 - 209 호 「 의료법 」 제 53 조 및 「 신의료기술평가에 관한 규칙 」 제 4 조 에 의한 「 신의료기술의 안전성 · 유효성 평가결과 고시 」 ( 보건 복지부 고 시 제 2026-170 호 , 2026. 8. 10.) 를 다음과 같이 개정ㆍ발 령 합니 다 . 2026 년 10 월 8 일 보건복지부장관",
+  "attachments": [
+   {
+    "name": "(2026년 6차) 「신의료기술의 안전성·유효성 평가결과 고시」 일부개정(제2026-209호).hwpx",
+    "size": "54.74KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492183&seq=1"
+   },
+   {
+    "name": "(2026년 6차) 「신의료기술의 안전성·유효성 평가결과 고시」 일부개정(제2026-209호).pdf",
+    "size": "262.86KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492183&seq=2"
+   },
+   {
+    "name": "(2026년 6차) 「신의료기술의 안전성·유효성 평가결과 고시」 전문(제2026-209호).hwpx",
+    "size": "1.07MB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492183&seq=3"
+   },
+   {
+    "name": "(2026년 6차) 「신의료기술의 안전성·유효성 평가결과 고시」 전문(제2026-209호).pdf",
+    "size": "3.94MB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492183&seq=4"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492183&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기관·운영",
+  "title": "「노인정책영향평가 방법 및 절차 등에 관한 고시」 제정",
+  "num": "2026-208호",
+  "kind": "제정",
+  "date": "2026-10-06",
+  "dept": "우지현",
+  "intro": "보건복지부 고시 제2026-208호 「 노인복지법 」 제 5 조 2 및 「 노인복지법 시행령 」 제 3 조에 따른 노인정책영향평가에 필요한 세부사항 ( 보건복지부 고시 제 2026-208 호 , 2026.10.6.) 을 다음과 같이 제정ㆍ발령합니다 .",
+  "attachments": [
+   {
+    "name": "노인정책영향평가 방법 및 절차 등에 관한 고시 제정안(발령).hwpx",
+    "size": "54.66KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492160&seq=1"
+   },
+   {
+    "name": "노인정책영향평가 방법 및 절차 등에 관한 고시 제정안(발령).pdf",
+    "size": "203.25KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492160&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492160&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "보험급여·약제",
+  "title": "보험급여 등재약제 급여중지 해제 추가 연장 안내",
+  "num": "고시아님",
+  "kind": "일부개정",
+  "date": "",
+  "dept": "김서윤",
+  "intro": "1. 붙임의 건강보험 급여 적용 약제(자누스틴정25밀리그램 등 23품목, (주)경보제약)에 대해 대전지방법원에서 품목허가 취소처분 집행정지 인용 결정('25.7.9.)이 있어 건강보험 급여중지 해제 연장을 안내드린 바 있습니다. - 최근 항소심 진행에 따른 대전고등법원의 집행정지 인용 결정('26.9.29.)으로 급여중지 해제기간이 추가 연장 됨을 안내드리니 업무에 참고하시기 바랍니다. ※ 대전고등법원 2026누331 품목허가 취소처분 취소 청구 사건의 판결 선고일로부터 30일이 되는 날까지 건강보험 급여적용이 유지 되며, 추후 변동사항이 있을 경우 별도 안내 예정 붙임 급여중지 해제 추가 연장 목록 1부",
+  "attachments": [
+   {
+    "name": "261002 급여중지 해제 추가 연장 목록_경보제약(22품목).xlsx",
+    "size": "23.02KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492149&seq=1"
+   },
+   {
+    "name": "261002 급여중지 해제 추가 연장 목록_경보제약(22품목).pdf",
+    "size": "61.33KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492149&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492149&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "요양·돌봄",
+  "title": "「요양기관 행정처분 감면기준 및 거짓청구 유형」일부개정",
+  "num": "고시: 제2026-206호",
+  "kind": "일부개정",
+  "date": "2026-10-02",
+  "dept": "장혜민",
+  "intro": "보건복지부고시 제 2026 - 206 호 「요양기관 행정처분 감면기준 및 거짓청구 유형 」 고시 를 다음과 같이 개정ㆍ발령합니다 . 2026 년 10 월 2 일 보건복지부장관",
+  "attachments": [
+   {
+    "name": "「요양기관 행정처분 감면기준 및 거짓청구 유형」 일부개정안.hwpx",
+    "size": "35.14KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492145&seq=1"
+   },
+   {
+    "name": "「요양기관 행정처분 감면기준 및 거짓청구 유형」 일부개정안.pdf",
+    "size": "126.95KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492145&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492145&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기관·운영",
+  "title": "「첨단재생의료실시기관 지정 및 세포처리업무 관련 준수사항 등에 관한 규정」일부개정",
+  "num": "제2026-207호",
+  "kind": "일부개정",
+  "date": "2026-10-02",
+  "dept": "전현수",
+  "intro": "보건복지부고시 제 2026-207 호 「 첨단재생의료 및 첨단바이오의약품 안전 및 지원에 관한 법률 시행령 」 제 18 조제 1 항 · 제 3 항 , 「 첨단재생의료 안전 및 지원에 관한 규칙 」 제 3 조제 6 항 , 제 4 조제 1 항 , 제 5 조의 2 제 3 항 , 제 12 조제 2 항 및 제 19 조제 7 항 등에 따른 「 첨단재생의료실시기관 지정 및 세포처리업무 관련 준수사항 등에 대한 규정 」 을 다음과 같이 개정 · 발령합니다 . 2026 년 10 월 2 일 보건복지부장관 □ 주요 내용 가. 세포처리업무에 수입을 추가 나. 세포처리시설 장의 세부 준수사항에 수입에 관한 내용 추가 □ 시행일 : 2026.11.27.",
+  "attachments": [
+   {
+    "name": "(제2026-207호, 10.2.)첨단재생의료실시기관 지정 및 세포처리업무 관련 준수사항 등에 관한 규정 일부개정고시.hwpx",
+    "size": "53.11KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492143&seq=1"
+   },
+   {
+    "name": "(제2026-207호, 10.2.)첨단재생의료실시기관 지정 및 세포처리업무 관련 준수사항 등에 관한 규정 일부개정고시.pdf",
+    "size": "187.08KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492143&seq=2"
+   },
+   {
+    "name": "(제2026-207호, 10.2.)첨단재생의료실시기관 지정 및 세포처리업무 관련 준수사항 등에 관한 규정 일부개정고시 개정별표.hwpx",
+    "size": "67.18KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492143&seq=3"
+   },
+   {
+    "name": "(제2026-207호, 10.2.)첨단재생의료실시기관 지정 및 세포처리업무 관련 준수사항 등에 관한 규정 일부개정고시 개정별표.pdf",
+    "size": "273.54KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492143&seq=4"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492143&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "요양급여",
+  "title": "「요양급여의 적용기준 및 방법에 관한 세부사항」 일부개정",
+  "num": "제2026-205호",
+  "kind": "일부개정",
+  "date": "2026-09-30",
+  "dept": "오혜인",
+  "intro": "보건복지부 고시 제2026 - 205호 「국민건강보험법」제41조제3항 및 제4항, 「국민건강보험법 시행령」제19조제1항 관련 별표2 및 「국민건강보험 요양급여의 기준에 관한 규칙」제5조제2항에 의한 「요양급여의 적용기준 및 방법에 관한 세부사항을 다음과 같이 개정·발령합니다. 2026년 9월 30일 보건복지부장관 요양급여의 적용기준 및 방법에 관한 세부사항 일부개정고시 □ 주요내용 ○ CLDN18(43-14A) 검사(면역조직화학검사법) 세부검사항목 신설 □ 시행일: 2026. 10. 1. □ 문의: 보험급여과 044-202-2737, 2741",
+  "attachments": [
+   {
+    "name": "(제2026-205호, 9.30.) 요양급여의 적용기준 및 방법에 대한 세부사항 일부개정고시.hwpx",
+    "size": "41.25KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492104&seq=1"
+   },
+   {
+    "name": "(제2026-205호, 9.30.) 요양급여의 적용기준 및 방법에 대한 세부사항 일부개정고시.pdf",
+    "size": "114.8KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492104&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492104&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "요양급여",
+  "title": "「요양급여의 적용기준 및 방법에 관한 세부사항」일부개정",
+  "num": "제2026 - 204호",
+  "kind": "일부개정",
+  "date": "2026-09-30",
+  "dept": "정소연",
+  "intro": "보건복지부 고시 제 2026 - 204 호 「 국민건강보험법 」 제 41 조제 3 항 및 제 4 항 , 「 국민건강보험법 시행령 」 제 19 조제 1 항 관련 [ 별표 2] 및 「 국민건강보험 요양급여의 기준에 관한 규칙 」 제 5 조제 2 항에 의한 「 요양급여의 적용기준 및 방법에 관한 세부 사항 」 ( 보건복지부 고시 제 2026-201 호 , 2026.9.30.) 을 다음과 같이 개정ㆍ발령합니다 . 2026 년 9 월 30 일 보건복지부 장관 「 요양급여의 적용기준 및 방법에 관한 세부사항 」 일부개정 □ 주요내용 ○ 연명의료결정법 시행규칙 [별표2] 호스피스전문기관의 지정기준의 가정형호스피스전문기관 간호사 인력기준 개정에 따른 호스피스 급여 목록 상대가치점수 및 산정지침 중 가정형 호스피스 전문기관 세부 인력 기준 개정 □ 시행일: 2026. 10. 1.",
+  "attachments": [
+   {
+    "name": "(제2026-204호) 요양급여의_적용기준_및_방법에_관한_세부사항_일부개정안(호스피스).hwpx",
+    "size": "143.16KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492102&seq=1"
+   },
+   {
+    "name": "(제2026-204호) 요양급여의_적용기준_및_방법에_관한_세부사항_일부개정안(호스피스).pdf",
+    "size": "304.02KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492102&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492102&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기타",
+  "title": "「치료재료 급여·비급여 목록 및 급여상한금액표」 고시 일부개정",
+  "num": "제2026-203호",
+  "kind": "일부개정",
+  "date": "2026-09-30",
+  "dept": "김상진",
+  "intro": "보건복지부 고시 제 2026-203 호 「 국민건강보험법 」 제 41 조의 3, 「 국민건강보험 요양급여의 기준에 관한 규칙 」 제 8 조제 2 항 및 제 11 조부터 제 13 조까지의 규정에 의한 「 치료재료 급여 ？ 비급여 목록 및 급여상한금액표 」 ( 보건복지부 고시 제 2026-193 호 , 2026.10.1.) 를 다음과 같이 개정 ？ 발령합니다 . 2026 년 9 월 30 일 보건복지부장관 치료재료 급여 ？ 비급여 목록 및 급여상한금액표 일부개정고시 치료재료 급여 ？ 비급여 목록 및 급여상한금액표 일부를 다음과 같이 개정한다 . 별지 본인일부부담 M 군의 ‘MINI VOLUME EXTENSION (PVC-FREE)’ 란 다음에 ‘ 체강순환용 가온관류세트 ’ 란을 다음과 같이 신설한다 . 코드 품명 규격 단위 제조회사 재질 수입 ( 판매 ) 업소 환율반영 상한금액 적용일자 비고 체강순환용 가온관류세트 M1018001 BELMONT HIPEC DISPOSABLE SET 전규격 1EA BELMONT MEDICAL TECHNOLOGIES POLYPROPYLENE, POLYVINYL CHLORIDE 등 ( 주 ) 엠알솔루션 1,675,020 2026-10-01 본인부담률 50% → 급여전환 / 중복인정여부 Y 별지 100 분의 100 미만 본인부담품목 ( 선별급여 ) 의 ‘ 체강순환용 가온관류세트 ’ 란을 삭제한다 . 부 칙 이 고시는 2026 년 10 월 1 일부터 시행한다 .",
+  "attachments": [
+   {
+    "name": "(제2026-203호, 2026.10.1.) 「치료재료 급여·비급여 목록 및 급여상한금액표」 고시 일부개정.hwpx",
+    "size": "48.97KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492099&seq=1"
+   },
+   {
+    "name": "(제2026-203호, 2026.10.1.) 「치료재료 급여·비급여 목록 및 급여상한금액표」 고시 일부개정.pdf",
+    "size": "105.61KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492099&seq=2"
+   },
+   {
+    "name": "(제2026-203호, 2026.10.1.) 「치료재료 급여·비급여 목록 및 급여상한금액표」 별지.xlsx",
+    "size": "17.46KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492099&seq=3"
+   },
+   {
+    "name": "(제2026-203호, 2026.10.1.) 「치료재료 급여·비급여 목록 및 급여상한금액표」 별지.pdf",
+    "size": "49.94KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492099&seq=4"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492099&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기타",
+  "title": "「건강보험 행위 급여·비급여 목록표 및 급여 상대가치점수」 고시 일부개정",
+  "num": "제2026-202호",
+  "kind": "일부개정",
+  "date": "2026-09-30",
+  "dept": "김상진",
+  "intro": "보건복지부 고시 제 2026 - 202 호 「 국민건강보험법 시행령 」 제 21 조제 2 항 ·3 항 및 「 국민건강보험 요양급여의 기준에 관한 규칙 」 제 8 조제 2 항부터 제 5 항까지 , 제 9 조제 1 항 , 제 11 조제 1 항 , 제 12 조제 2 항 및 제 13 조 제 1 항 · 제 3 항에 의한 「 건강보험 행위 급여 · 비급여 목록표 및 급여 상대가치점수 」 ( 보건복지부 고시 제 2026-194 호 , 2026.10.1. ) 를 다음과 같이 개정ㆍ발령합니다 . 2026 년 9 월 30 일 보건복지부장관 건강보험 행위 급여 · 비급여 목록표 및 급여 상대가치점수 일부개정고시 건강보험 행위 급여 ？ 비급여 목록표 및 급여 상대가치점수 일부를 다음과 같이 개정한다 . 제 1 편 제 2 부 제 9 장 제 1 절 [ 복막 및 후복막 ] 의 자 -248-1 의 분류란의 주 : 의 1. 을 삭제한다 . 제 1 편 제 2 부 제 9 장 제 1 절의 [ 복막 및 후복막 ] 의 자 -248-1 의 분류란의 주 : 의 2. 부터 4. 까지를 1. 부터 3. 까지로 한다 . 부 칙 이 고시는 2026 년 10 월 1 일부터 시행한다 .",
+  "attachments": [
+   {
+    "name": "(제2026-202호, 2026.10.1.) 「건강보험 행위 급여·비급여 목록표 및 급여 상대가치점수」 고시 일부개정.hwpx",
+    "size": "47.26KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492098&seq=1"
+   },
+   {
+    "name": "(제2026-202호, 2026.10.1.) 「건강보험 행위 급여·비급여 목록표 및 급여 상대가치점수」 고시 일부개정.pdf",
+    "size": "129.85KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492098&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492098&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "요양급여",
+  "title": "「요양급여의 적용기준 및 방법에 관한 세부사항」 고시 일부개정",
+  "num": "제2026-201호",
+  "kind": "일부개정",
+  "date": "2026-09-30",
+  "dept": "김상진",
+  "intro": "보건복지부 고시 제 2026-201 호 「 국민건강보험법 」 제 41 조제 3 항 및 제 4 항 , 「 국민건강보험법 시행령 」 제 19 조제 1 항 관련 별표 2 및 「 국민건강보험 요양급여의 기준에 관한 규칙 」 제 5 조제 2 항에 의한 「 요양급여의 적용기준 및 방법에 관한 세부사항 ( 보건복지부 고시 제 2026-199 호 , 2026.10.1.) 」 을 다음과 같이 개정 · 발령합니다 . 2026 년 9 월 30 일 보건복지부장관 요양급여의 적용기준 및 방법에 관한 세부사항 일부개정고시 요양급여의 적용기준 및 방법에 관한 세부사항 일부를 다음과 같이 개정한다 . Ⅰ . 제 9 장의 ‘ 자 2 창상봉합술 및 자 248 복막세척술 ’ 란 다음에 ‘ 자 248-1 복강내 온열 항암화학요법의 급여기준 ’ 란을 다음과 같이 신설한다 . 항 목 제 목 세부인정사항 자 248-1 복강내 온열 항암화학요법 복강내 온열 항암화 학요법의 급여기준 복강내 온열 항암화학요법 (Hyperthermic Intraperitoneal Chemotherapy, HIPEC) 은 종양감축술 (Cytoreductive Surgery, CRS) 후 수술실에서 연속하여 시행한 경우 다음과 같이 요양급여를 인정함 . - 다 음 - 급여대상 가 . 난소암 기원 복막암 나 . 충수점액종양 기원 복막가성점액종 다 . 복막중피종 2. 상기 1. 의 가 .~ 다 . 암종에 해당하지 않는 경우에는 수술료와 치료재료 ( 체강순환용 가온관류세트 ) 비용을 ？ 선별급여 지정 및 실시 등에 관한 기준 ？ 에 따라 본인부담률을 50% 로 적용함 . 부 칙 이 고시는 2026 년 10 월 1 일부터 시행한다 .",
+  "attachments": [
+   {
+    "name": "(제2026-201호, 2026.10.1.) 「요양급여의 적용기준 및 방법에 관한 세부사항」 고시 일부개정.hwpx",
+    "size": "49.57KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492097&seq=1"
+   },
+   {
+    "name": "(제2026-201호, 2026.10.1.) 「요양급여의 적용기준 및 방법에 관한 세부사항」 고시 일부개정.pdf",
+    "size": "137.81KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492097&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492097&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기관·운영",
+  "title": "「선별급여 지정 및 실시 등에 관한 기준」 고시 일부개정",
+  "num": "제2026-200호",
+  "kind": "일부개정",
+  "date": "2026-09-30",
+  "dept": "김상진",
+  "intro": "보건복지부 고시 제 2026-200 호 「 국민건강보험법 」 제 41 조의 4, 같은 법 시행령 제 18 조의 4 및 별표 2 제 4 호 , 「 국민건강보험 요양급여의 기준에 관한 규칙 」 제 14 조의 3 부터 제 14 조의 5 까지의 규정에 의한 「 선별급여 지정 및 실시 등에 관한 기준 」 ( 보건복지부 고시 제 2026-184 호 , 2026.9.1.) 을 다음과 같이 개정 · 발령 합니다 . 2026 년 9 월 30 일 보건복지부장관 선별급여 지정 및 실시 등에 관한 기준 일부개정고시 선별급여 지정 및 실시 등에 관한 기준 일부를 다음과 같이 개정한다 . 별표 2 제 1 호가목의 자가 혈소판 풍부 혈장 치료술의 적용일란 , 평가주기란 및 평가완료차수란을 다음과 같이 한다 . 적용일 평가주기 평가완료차수 2026-10-01 5 년 1 별표 2 제 1 호나목의 복강내 온열 항암화학요법란을 삭제한다 . 부 칙 이 고시는 2026 년 10 월 1 일부터 시행한다 .",
+  "attachments": [
+   {
+    "name": "(제2026-200호, 2026.10.1.) 「선별급여 지정 및 실시 등에 관한 기준」 고시 일부개정.pdf",
+    "size": "148KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492096&seq=1"
+   },
+   {
+    "name": "(제2026-200호, 2026.10.1.) 「선별급여 지정 및 실시 등에 관한 기준」 고시 일부개정.hwpx",
+    "size": "47.9KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492096&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492096&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "요양급여",
+  "title": "「요양급여의 적용기준 및 방법에 관한 세부사항」 일부개정",
+  "num": "제2026-199호",
+  "kind": "일부개정",
+  "date": "2026-09-30",
+  "dept": "한해리",
+  "intro": "보건복지부 고시 제 2026-199 호 「 국민건강보험법 」 제 41 조제 3 항 및 제 4 항 , 「 국민건강보험법 시행령 」 제 19 조제 1 항 관련 별표 2 및 「 국민건강보험 요양급여의 기준에 관한 규칙 」 제 5 조제 2 항에 의한 「 요양급여의 적용기준 및 방법에 관한 세부 사항 」 을 다음과 같이 개정 · 발령합니다 . 2026 년 9 월 30 일 보건복지부 장관 □ 주요개정사항: 고주파 열치료술용 전극(Electrode)의 급여기준 개정 □ 시행일: 2026. 10. 1.",
+  "attachments": [
+   {
+    "name": "(제2026-199호, 9.30.) 「요양급여의 적용기준 및 방법에 관한 세부사항」 일부개정.hwpx",
+    "size": "43.1KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492087&seq=1"
+   },
+   {
+    "name": "(제2026-199호, 9.30.) 「요양급여의 적용기준 및 방법에 관한 세부사항」 일부개정.pdf",
+    "size": "139.93KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492087&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492087&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기타",
+  "title": "「가족요양비 지급 및 의사소견서 제출 제외대상 섬·벽지지역 고시」 일부개정",
+  "num": "제2026-198호",
+  "kind": "일부개정",
+  "date": "2026-10-01",
+  "dept": "양소현",
+  "intro": "보건복지부 고시 제2026 - 198호 「 노인장기요양보험법 」 제 13 조제 2 항 및 제 24 조 , 같은 법 시행령 제 6 조제 2 호 및 제 12 조에 의한 「 가족요양비 지급 및 의사소견서 제출 제외대상 섬 · 벽지 지역 고시 」 를 다음과 같이 개정 · 발령합니다 . 2026년 9월 30일 보건복지부장관 가족요양비 지급 및 의사소견서 제출 제외대상 섬 · 벽지지역 고시 일부개정 □ 주요내용 가 . 섬 · 벽지지역 판단기준 예외 인정 범위 확대 ( 안 제 2 조 ) 나 . 의사소견서 제출 제외대상 섬 · 벽지지역 지정 기준 관련 조항 수정 ( 안 제 3 조제 2 호 ) 다 . 재검토 기한 및 주기 현행화 ( 안 제 4 조 ) 라 . 가족요양비 지급 섬 · 벽지 지역 - 섬지역 395 개 , 벽지지역 110 개 ( 별표 , 섬 · 벽지지역 ) 마 . 의사소견서 제출 제외대상 섬 · 벽지지역 - 섬지역 353 개 , 벽지지역 52 개 ( 별표 , 섬 · 벽지지역 ) □ 시행일: 2026. 10. 1.",
+  "attachments": [
+   {
+    "name": "★26년 가족요양비 지급 및 의사소견서 제출 제외대상 섬·벽지지역 고시 일부개정_최종_.hwpx",
+    "size": "87.63KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492086&seq=1"
+   },
+   {
+    "name": "★26년 가족요양비 지급 및 의사소견서 제출 제외대상 섬·벽지지역 고시 일부개정_최종_.pdf",
+    "size": "344.83KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492086&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492086&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "요양급여",
+  "title": "임상연구의 요양급여 적용에 관한 기준 일부개정고시",
+  "num": "제2026-197호",
+  "kind": "일부개정",
+  "date": "2026-09-29",
+  "dept": "오혜인",
+  "intro": "보건복지부 고시 제2026 - 197호 「국민건강보험 요양급여의 기준에 관한 규칙」 제5조제2항 및 별표 1 제1호 자목에 따른 「임상연구의 요양급여 적용에 관한 기준」(보건복지부 고시 제2025-41호, 2025.2.28.)」을 다음과 같이 개정·발령합니다. 2026년 9월 29일 보건복지부장관 임상연구의 요양급여 적용에 관한 기준 일부개정고시 □ 주요내용 ○ 요양급여 신청 제한 기산점 명확화(제16조) ○ 정보통신망을 이용한 통보방법 및 통보시점에 대한 근거 마련(제18조) ○ 별지 서식의 제출 서류 구체화(별지 제1호 및 제3호 서식) □ 시행일: 발령한 날부터 □ 문의: 보험급여과 044-202-2737, 2741",
+  "attachments": [
+   {
+    "name": "(제2026-197호, 9.29.) 임상연구의 요양급여 적용에 관한 기준 일부개정.hwpx",
+    "size": "72.57KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492084&seq=1"
+   },
+   {
+    "name": "(제2026-197호, 9.29.) 임상연구의 요양급여 적용에 관한 기준 일부개정.pdf",
+    "size": "220.26KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492084&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492084&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "요양급여",
+  "title": "「요양급여의 적용기준 및 방법에 관한 세부사항」 일부개정",
+  "num": "제2026-196호",
+  "kind": "일부개정",
+  "date": "2026-09-29",
+  "dept": "오혜인",
+  "intro": "보건복지부 고시 제2026 - 196호 「국민건강보험법」제41조제3항 및 제4항, 「국민건강보험법 시행령」제19조제1항 관련 별표2 및 「국민건강보험 요양급여의 기준에 관한 규칙」제5조제2항에 의한 「요양급여의 적용기준 및 방법에 관한 세부사항」을 다음과 같이 개정·발령합니다. 2026년 9월 29일 보건복지부장관 요양급여의 적용기준 및 방법에 관한 세부사항 일부개정고시 □ 주요내용 ○ 비타민[정밀분광-질량분석] 세부검사항목 신설 ○ 나567 면역조직(세포) 화학검사 Level II 수가산정방법 급여기준 확대 ○ 나583나(1) IDH1 Gene 검사의 급여기준 신설 ○ 운동부하 우심도자술 급여기준 신설 ○ 휠체어 조작기술 훈련 급여기준 신설 □ 시행일: 2026. 10. 1. □ 문의: 보험급여과 044-202-2737, 2741",
+  "attachments": [
+   {
+    "name": "(제2026-196호, 9.29.) 요양급여의 적용기준 및 방법에 관한 세부사항 일부개정고시.hwpx",
+    "size": "68.92KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492083&seq=1"
+   },
+   {
+    "name": "(제2026-196호, 9.29.) 요양급여의 적용기준 및 방법에 관한 세부사항 일부개정고시.pdf",
+    "size": "274.54KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492083&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492083&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "요양급여",
+  "title": "요양급여의 적용기준 및 방법에 관한 세부사항 일부개정 안내",
+  "num": "제2026-195호",
+  "kind": "일부개정",
+  "date": "2026-09-29",
+  "dept": "김준혁",
+  "intro": "보건복지부 고시 제 2026-195 호 「 국민건강보험법 」 제 41 조제 3 항 및 제 4 항 , 「 국민건강보험법 시행령 」 제 19 조제 1 항 관련 별표 2 및 「 국민건강보험 요양급여의 기준에 관한 규칙 」 제 5 조제 2 항에 의한 「 요양급여의 적용기준 및 방법에 관한 세부 사항 」 을 다음과 같이 개정 · 발령합니다 . 2026 년 9 월 29 일 보건복지부장관 요양급여의 적용기준 및 방법에 관한 세부사항 일부개정안 ○ 주요 내용 - 가-31 정맥내 혈전용해술 관리료 수가 적용 대상에 테넥테플라제(Tenecteplase) 추가하여 산정기준 신설 ○ 시행일 : 2026. 10. 1.(목)",
+  "attachments": [
+   {
+    "name": "(제2026-195호) 요양급여의 적용기준 및 방법에 관한 세부사항 일부개정안.hwpx",
+    "size": "45.02KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492082&seq=1"
+   },
+   {
+    "name": "(제2026-195호) 요양급여의 적용기준 및 방법에 관한 세부사항 일부개정안.pdf",
+    "size": "104.73KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492082&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492082&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기타",
+  "title": "건강보험 행위 급여·비급여 목록표 및 급여 상대가치점수 일부개정 안내",
+  "num": "제2026-194호",
+  "kind": "일부개정",
+  "date": "2026-09-29",
+  "dept": "김준혁",
+  "intro": "보건복지부 고시 제 2026-194 호 「 국민건강보험법 시행령 」 제 21 조제 2 항 ·3 항 및 「 국민건강보험 요양급여의 기준에 관한 규칙 」 제 8 조제 2 항부터 제 5 항까지 , 제 9 조제 1 항 , 제 11 조제 1 항 , 제 12 조제 2 항 및 제 13 조 제 1 항 · 제 3 항에 의한 「 건강보험 행위 급여 · 비급여 목록표 및 급여 상대가치점수 」 를 다음과 같이 개정 · 발령합니다 . 2026 년 9 월 29 일 보건복지부장관 건강보험 행위 급여 · 비급여 목록표 및 급여 상대가치점수 일부개정안 ○ 주요내용 - 가-31 정맥내 혈전용해술 관리료 \"주\"항 삭제 ○ 시행일 : 2026. 10. 1.(목)",
+  "attachments": [
+   {
+    "name": "(제2026-194호) 건강보험 행위 급여·비급여 목록표 및 급여 상대가치점수 일부개정안.hwpx",
+    "size": "36.2KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492081&seq=1"
+   },
+   {
+    "name": "(제2026-194호) 건강보험 행위 급여·비급여 목록표 및 급여 상대가치점수 일부개정안.pdf",
+    "size": "107.44KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492081&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492081&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기타",
+  "title": "「치료재료 급여·비급여 목록 및 급여상한금액표」일부개정",
+  "num": "제2026-193호",
+  "kind": "일부개정",
+  "date": "2026-09-29",
+  "dept": "한해리",
+  "intro": "보건복지부 고시 제 2026-193 호 「 국민건강보험법 」 제 41 조의 3, 「 국민건강보험 요양급여의 기준에 관한 규칙 」 제 8 조제 2 항 및 제 11 조부터 제 13 조까지의 규정에 의한 「 치료재료 급여 · 비급여 목록 및 급여상한금액표 」 를 다음과 같이 개정 · 발령합니다 . 2026 년 9 월 29 일 보건복지부장관",
+  "attachments": [
+   {
+    "name": "(제2026-193호, 9.29.) 「치료재료 급여비급여 목록 및 급여상한금액표」 고시 일부개정.hwpx",
+    "size": "38.91KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492078&seq=1"
+   },
+   {
+    "name": "(제2026-193호, 9.29.) 「치료재료 급여비급여 목록 및 급여상한금액표」 고시 일부개정.pdf",
+    "size": "96.53KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492078&seq=2"
+   },
+   {
+    "name": "(2026.10.1.) 「치료재료 급여비급여 목록 및 급여상한금액표」 개정(목록표).xlsx",
+    "size": "78.38KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492078&seq=3"
+   },
+   {
+    "name": "(2026.10.1.) 「치료재료 급여비급여 목록 및 급여상한금액표」 개정(목록표).pdf",
+    "size": "280.17KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492078&seq=4"
+   },
+   {
+    "name": "(2026.10.1.) 「치료재료 급여비급여 목록 및 급여상한금액표」 개정(변경대비표).xlsx",
+    "size": "39.01KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492078&seq=5"
+   },
+   {
+    "name": "(2026.10.1.) 「치료재료 급여비급여 목록 및 급여상한금액표」 개정(변경대비표).pdf",
+    "size": "175.36KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492078&seq=6"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492078&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "요양급여",
+  "title": "「요양급여의 적용기준 및 방법에 관한 세부사항(약제)」 일부개정 안내",
+  "num": "제2026-192호",
+  "kind": "일부개정",
+  "date": "2026-09-29",
+  "dept": "김충열",
+  "intro": "보건복지부 고시 제2026-192호 「국민건강보험법」 제41조제3항 및 제4항, 「국민건강보험 요양급여 기준에 관한 규칙」제5조제2항에 따라「요양급여의 적용기준 및 방법에 관한 세부사항」(보건복지부 고시 제2026-176호(2026. 8. 27.)을 다음과 같이 개정ㆍ발령합니다. 2026년 9월 29일 보건복지부장관 「요양급여의 적용기준 및 방법에 관한 세부사항」 일부개정 요양급여의 적용기준 및 방법에 대한 세부사항 일부를 다음과 같이 개정한다. Ⅱ. 약제 “[232] Cinnamon bark dry ext. 경구제(품명:지텍정75밀리그램)”를 별지 1과 같이 신설하고, “[421] Ruxolitinib phosphate 경구제(품명: 자카비정5밀리그램 등)”의 세부인정기준 및 방법의 일부를 별지 2와 같이 변경한다. 부 칙 이 고시는 2026년 10월 1일부터 시행한다.",
+  "attachments": [
+   {
+    "name": "「요양급여의 적용기준 및 방법에 관한 세부사항(약제)」 일부개정고시.hwpx",
+    "size": "49.92KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492077&seq=1"
+   },
+   {
+    "name": "별지. 신설 및 변경 급여기준.hwpx",
+    "size": "42.74KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492077&seq=2"
+   },
+   {
+    "name": "「요양급여의 적용기준 및 방법에 관한 세부사항(약제)」 일부개정고시.pdf",
+    "size": "250.93KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492077&seq=3"
+   },
+   {
+    "name": "별지. 신설 및 변경 급여기준.pdf",
+    "size": "248.89KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492077&seq=4"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492077&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "보험급여·약제",
+  "title": "「약제 급여 목록 및 급여 상한금액표」일부개정고시(제2026-190호) 안내",
+  "num": "제2026-190호",
+  "kind": "일부개정",
+  "date": "2026-09-29",
+  "dept": "김서윤",
+  "intro": "보건복지부 고시 제2026-190호 「국민건강보험법 시행령」 제22조제1항 및 「국민건강보험 요양급여의 기준에 관한 규칙 」 제8조제2항에 따른 「약제 급여 목록 및 급여 상한금액표 」를 다음과 같이 개정 발령합니다. 2026년 9월 29일 보건복지부장관 < 약가유연계약 적용 약제 관련 참고사항 > - 약가유연계약 적용 약제는 표시가(공개용) 와 별도 합의 상한금액(실제가) 로 각각 관리되고 있으며, 본 고시개정안 에는 표시가(공개용)만 확인할 수 있으므로 별도 합의 상한금액(실제가) 변동사항을 반드시 확인 해주셔야합니다. - 별도 합의 상한금액(실제가) 은 아래의 요양기관업무포털 경로에서 인 가 된 대상자 에 한해서만 확인 할 수 있으니, 인가된 대상이 아닐 경우 제약사에 별도 확인이 가능합니다. * 요양기관업무포털(biz.hira.or.kr) -> 공동인증서 로그인 -> 심사기준종합서비스 -> 약제청구관련기준(약가파일) - 약가유연계약 약제 현황은 심평원 홈페이지(hira.or.kr) -> 제도 정책 -> 약제기준정보 -> 목록표 상 '비고란' -> \"약가유연계약 적용 약제\" 를 참고하여 주시기 바랍니다.",
+  "attachments": [
+   {
+    "name": "약제 급여 목록 및 급여 상한금액표 일부개정고시(2026-190호).hwpx",
+    "size": "41.96KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492075&seq=1"
+   },
+   {
+    "name": "약제 급여 목록 및 급여 상한금액표 일부개정고시(2026-190호).pdf",
+    "size": "97.03KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492075&seq=2"
+   },
+   {
+    "name": "약제 급여 목록 및 급여 상한금액표 일부개정고시(2026-190호)_별표1 목록표.xlsx",
+    "size": "53.98KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492075&seq=3"
+   },
+   {
+    "name": "약제 급여 목록 및 급여 상한금액표 일부개정고시(2026-190호)_별표1 목록표.pdf",
+    "size": "113.24KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492075&seq=4"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492075&act=view",
+  "collected": "2026-10-15"
+ },
+ {
+  "source": "welfare",
+  "category": "기타",
+  "title": "「건강보험 행위 급여·비급여 목록표 및 급여 상대가치점수」일부개정",
+  "num": "2026-191호",
+  "kind": "일부개정",
+  "date": "2026-09-29",
+  "dept": "정소연",
+  "intro": "보건복지부 고시 제2026 - 191호 「국민건강보험법 시행령」 제21조제2항·3항 및 「국민건강보험 요양급여의 기준에 관한 규칙」 제8조제2항부터 제5항까지, 제9조제1항, 제11조제1항, 제12조제2항 및 제13조 제1항·제3항에 의한 「건강보험 행위 급여·비급여 목록표 및 급여 상대가치점수」를 다음과 같이 개정·발령합니다. 2026년 9월 29일 보건복지부장관 건강보험 행위 급여·비급여 목록표 및 급여 상대가치점수 일부개정고시 □ 주요내용 ○ 치료재료 급여·비급여 목록의 중분류명 변경 * (26.9.1.시행) 에 따른 질병군 선별급여 치료재료 중분류명 개정 * (변경 전) 고 주파를 이용한 하비갑개 용적감소술용 전극 → (변경 후) 하비갑개 용적감소술용 PROBE □ 시행일: 2026. 10. 1.",
+  "attachments": [
+   {
+    "name": "(제2026-191호)_건강보험_행위_급여.비급여_목록표_및_급여상대가치점수(질병군).hwpx",
+    "size": "48.89KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492071&seq=1"
+   },
+   {
+    "name": "(제2026-191호)_건강보험_행위_급여.비급여_목록표_및_급여상대가치점수(질병군).pdf",
+    "size": "112.89KB",
+    "url": "https://www.mohw.go.kr/boardDownload.es?bid=0026&list_no=1492071&seq=2"
+   }
+  ],
+  "link": "https://www.mohw.go.kr/board.es?mid=a10409020000&bid=0026&list_no=1492071&act=view",
+  "collected": "2026-10-15"
+ }
+]
+</script>
+
+<!-- ================= 장기요양 급여비용 계산기 데이터 (고시 제2026-189호) ================= -->
+<script id="ltc-dataset" type="application/json">
+{
+  "meta": {
+    "title": "장기요양 급여비용 계산기",
+    "source": "보건복지부고시 제2026-189호 (2026.10.1 시행)",
+    "note": "가산·감산 전 기본 급여비용 기준 / 본인부담률: 재가 15%, 시설 20% (경감·기초수급 제외)",
+    "ref": "슬라이드 콘텐츠_ 치료와 돌봄, 그 사이의 시니어 사업 (19장).md"
+  },
+  "groups": ["재가급여","시설급여","특별현금급여"],
+  "services": [
+    { "id":"visit_care", "name":"방문요양", "group":"재가급여", "cat":"재가(방문형)", "unit":"1회 방문당", "copay":0.15, "article":"제18조", "selectLabel":"제공시간",
+      "options":[
+        {"label":"30분 이상","fee":17450},{"label":"60분 이상","fee":25320},{"label":"90분 이상","fee":34120},{"label":"120분 이상","fee":43430},
+        {"label":"150분 이상","fee":50640},{"label":"180분 이상","fee":57020},{"label":"210분 이상","fee":63530},{"label":"240분 이상","fee":70080}
+      ]
+    },
+    { "id":"visit_bath", "name":"방문목욕", "group":"재가급여", "cat":"재가(방문형)", "unit":"1회당", "copay":0.15, "article":"제25조", "selectLabel":"목욕 유형",
+      "options":[
+        {"label":"차량 이용(차량 내 목욕)","fee":88990},{"label":"차량 이용(가정 내 목욕)","fee":80230},{"label":"차량 미이용","fee":50100}
+      ]
+    },
+    { "id":"visit_nursing", "name":"방문간호", "group":"재가급여", "cat":"재가(방문형)", "unit":"1회 방문당", "copay":0.15, "article":"제28조", "selectLabel":"방문 시간",
+      "options":[
+        {"label":"15분 이상~30분 미만","fee":42880},{"label":"30분 이상~60분 미만","fee":53770},{"label":"60분 이상","fee":64690}
+      ]
+    },
+    { "id":"day_night", "name":"주·야간보호", "group":"재가급여", "cat":"재가(보호형)", "unit":"1일당", "copay":0.15, "article":"제31조", "selectLabel":"제공시간",
+      "grades":["1등급","2등급","3등급","4등급","5등급","인지지원"],
+      "options":[
+        {"label":"3~6시간 미만","fees":{"1등급":41820,"2등급":38720,"3등급":35740,"4등급":34120,"5등급":32490,"인지지원":32490}},
+        {"label":"6~8시간 미만","fees":{"1등급":56060,"2등급":51930,"3등급":47940,"4등급":46300,"5등급":44650,"인지지원":44650}},
+        {"label":"8~10시간 미만","fees":{"1등급":69730,"2등급":64590,"3등급":59640,"4등급":58010,"5등급":56360,"인지지원":56360}},
+        {"label":"10~13시간 이하","fees":{"1등급":76820,"2등급":71160,"3등급":65750,"4등급":64090,"5등급":62460,"인지지원":56360}},
+        {"label":"13시간 초과","fees":{"1등급":82370,"2등급":76310,"3등급":70500,"4등급":68860,"5등급":67240,"인지지원":56360}}
+      ]
+    },
+    { "id":"short_stay", "name":"단기보호", "group":"재가급여", "cat":"재가(보호형)", "unit":"1일당", "copay":0.15, "article":"제37조", "selectLabel":"등급",
+      "options":[
+        {"label":"1등급","fee":74060},{"label":"2등급","fee":68580},{"label":"3등급","fee":63350},{"label":"4등급","fee":61680},{"label":"5등급","fee":60000}
+      ]
+    },
+    { "id":"nursing_home", "name":"노인요양시설", "group":"시설급여", "cat":"시설", "unit":"1일당", "copay":0.20, "article":"시설급여", "selectLabel":"등급", "periodMode":true,
+      "gradeLabel":"요양보호사 배치",
+      "grades":["요양보호사 2.1:1 이상","요양보호사 2.1:1 미만"],
+      "options":[
+        {"label":"1등급","fees":{"요양보호사 2.1:1 이상":93070,"요양보호사 2.1:1 미만":88520}},
+        {"label":"2등급","fees":{"요양보호사 2.1:1 이상":86340,"요양보호사 2.1:1 미만":82120}},
+        {"label":"3~5등급","fees":{"요양보호사 2.1:1 이상":81540,"요양보호사 2.1:1 미만":77540}}
+      ]
+    },
+    { "id":"group_home", "name":"노인요양공동생활가정", "group":"시설급여", "cat":"시설", "unit":"1일당", "copay":0.20, "article":"시설급여", "selectLabel":"등급", "periodMode":true,
+      "options":[
+        {"label":"1등급","fee":74590},{"label":"2등급","fee":69210},{"label":"3~5등급","fee":63800}
+      ]
+    },
+    { "id":"family_care", "name":"가족요양비", "group":"특별현금급여", "cat":"특별현금급여", "unit":"월정액", "copay":0, "article":"특별현금급여", "selectLabel":"급여 종류", "fixed":true,
+      "options":[ {"label":"가족요양비 (월)","fee":240450} ]
+    }
+  ]
+}
+</script>
+<script>
+const MAIN_SOURCES = {
+    "welfare": "보건복지부 고시",
+    "ltccalc": "장기요양 급여비용 계산기",
+    "ltcgrade": "노인장기요양보험 등급판정",
+    "caresys": "통합돌봄 제도 개요",
+    "carelink": "통합돌봄 제도 연계 서비스"
+};
+
+const UPCOMING_SOURCES = {
+    "kosis": {
+        "title": "KOSIS 국가통계포털",
+        "tag": "국가 승인통계",
+        "org": "통계청",
+        "url": "https://kosis.kr",
+        "desc": "대한민국 정부의 1,000여 종 공식 승인통계를 통합 제공하는 국가통계 포털입니다.",
+        "plan": [
+            "인구총조사 및 장래인구추계 (고령인구 비율, 노년부양비, 시군구별 고령화 속도)",
+            "고령자 통계 (노인 가구 형태, 소득·자산, 경제활동, 건강 및 주관적 만족도)",
+            "생명표 및 건강수명, 기대여명 통계"
+        ]
+    },
+    "dart": {
+        "title": "전자공시시스템 (OpenDART)",
+        "tag": "기업 공시 오픈API",
+        "org": "금융감독원",
+        "url": "https://opendart.fss.or.kr/",
+        "desc": "금융감독원 전자공시시스템(DART)의 기업 공시정보를 Open API로 실시간 수집·활용할 수 있는 개발자 포털입니다.",
+        "plan": [
+            "시니어 헬스케어, 바이오, 실버타운, 요양서비스 관련 상장사 사업보고서 수집",
+            "시니어 사업 추진 기업의 실적, 설비투자, 유상증자, 지분 변동 모니터링",
+            "요양병원 및 시니어 리츠(REITs) 관련 기업 공시 데이터 수집"
+        ]
+    },
+    "knhanes": {
+        "title": "국민건강영양조사",
+        "tag": "보건의료 통계",
+        "org": "질병관리청",
+        "url": "https://knhanes.kdca.go.kr",
+        "desc": "국민의 건강행태, 만성질환 유병률, 식품 및 영양섭취 실태를 파악하는 국가 대표 보건조사 데이터베이스입니다.",
+        "plan": [
+            "노인 65세 이상 고혈압, 당뇨병, 이상지질혈증 등 주요 만성질환 유병률 데이터",
+            "노쇠 지표 및 일상활동제한(ADL), 와상 여부, 삶의 질(EQ-5D) 지표 연계",
+            "노년기 영양섭취 부족률 및 주요 식품군 섭취 실태 분석"
+        ]
+    },
+    "assembly_reg": {
+        "title": "국회의안정보시스템 · 규제정보포털",
+        "tag": "국회 의안 오픈API 및 규제",
+        "org": "대한민국 국회사무처 & 국무조정실",
+        "url": "https://www.data.go.kr/data/15126134/openapi.do?recommendDataYn=Y",
+        "guideDoc": "오픈API활용가이드_국회사무처.pdf",
+        "guideUrl": "https://www.data.go.kr/data/15126134/openapi.do?recommendDataYn=Y",
+        "desc": "국회에 발의된 법률안의 의안 기본정보, 제안이유, 주요내용 및 심사진행 현황을 제공하는 공공데이터포털 국회사무처 의안정보 Open API 및 규제정보 서비스입니다.",
+        "plan": [
+            "「노인장기요양보험법」, 「의료·요양 돌봄통합지원법」 관련 국회 의안 계류 및 심의 현황",
+            "시니어 주거(실버타운 임대/분양), 요양시설 설치기준 등 보건복지 규제 변동 추적",
+            "국회사무처 의안정보 Open API 실시간 호출을 통한 최신 입법 동향 자동 수집"
+        ]
+    },
+    "kind": {
+        "title": "빅카인즈 (Big KINDS)",
+        "tag": "뉴스 빅데이터",
+        "org": "한국언론진흥재단",
+        "url": "https://www.bigkinds.or.kr",
+        "desc": "국내 54개 주요 언론사 뉴스 기사를 수집·분석하여 시니어 케어, 고령화 정책, 헬스케어 관련 언론 보도 트렌드를 심층 분석할 수 있는 종합 뉴스 빅데이터 포털입니다.",
+        "plan": [
+            "시니어 헬스케어, 실버타운, 요양원, 통합돌봄 키워드 뉴스 빅데이터 분석",
+            "보건복지부 및 지자체 시니어 정책 발표, 조례 제정 등 언론 보도 실시간 모니터링",
+            "시니어 산업 및 에이지테크 관련 기업 동향, 사회적 이슈 관계도 분석"
+        ]
+    },
+    "data_portal": {
+        "title": "공공데이터포털",
+        "tag": "Open API & 데이터셋",
+        "org": "행정안전부 & 한국지능정보사회진흥원",
+        "url": "https://data.go.kr",
+        "desc": "정부부처 및 지자체, 공공기관이 보유한 공공데이터를 누구나 활용할 수 있도록 개방하는 포털입니다.",
+        "plan": [
+            "전국 장기요양기관(요양원, 주야간보호, 방문요양) 위치 및 정원 Open API 연동",
+            "전국 병·의원, 요양병원, 치매안심센터 인프라 현황 공공데이터셋 수집",
+            "지자체별 시니어 복지 예산 및 지역 특화 돌봄사업 현황 데이터 수집"
+        ]
+    }
+};
+
+const SOURCES = {
+    ...MAIN_SOURCES,
+    "kosis": "KOSIS(추가예정)",
+    "dart": "전자공시시스템(추가예정)",
+    "knhanes": "국민건강영양조사(추가예정)",
+    "assembly_reg": "국회의안정보시스템·규제정보포털(추가예정)",
+    "kind": "KIND(추가예정)",
+    "data_portal": "공공데이터포털(추가예정)"
+};
+
+let isUpcomingOpen = false;
+
+const RECORDS = JSON.parse(document.getElementById("dataset").textContent || "[]");
+
+function buildTree(records){
+    const tree={};
+    records.forEach(r=>{
+        (tree[r.source] ??= {});
+        (tree[r.source][r.category] ??= []).push(r);
+    });
+    Object.values(tree).forEach(cats=>Object.values(cats).forEach(a=>a.sort((x,y)=>(y.date||"").localeCompare(x.date||""))));
+    return tree;
+}
+const TREE = buildTree(RECORDS);
+let curSource=null, curCategory=null;
+function esc(s){ return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function kindChip(k){ return k && k!=="-" ? `<span class="chip kind-${esc(k)}">${esc(k)}</span>` : ""; }
+function extClass(name){
+    const m=(name||"").toLowerCase().match(/\.([a-z0-9]+)$/); const e=m?m[1]:"etc";
+    const known=["hwpx","hwp","pdf","xlsx","xls","docx","doc","zip"];
+    return known.includes(e)?e:"etc";
+}
+
+function renderSources(){
+    const el=document.getElementById("source-list"); el.innerHTML="";
+
+    // 1. 상시 메인 항목 5개 렌더링
+    Object.keys(MAIN_SOURCES).forEach(src=>{
+        const cnt= (src==="ltccalc") ? ((typeof LTC!=="undefined"&&LTC.services)?LTC.services.length:0)
+                 : (src==="ltcgrade") ? 2
+                 : (src==="caresys") ? 2
+                 : (src==="carelink") ? 5
+                 : (TREE[src] ? Object.values(TREE[src]).reduce((a,c)=>a+c.length,0) : 0);
+        const d=document.createElement("div");
+        d.className="menu-item"+(src===curSource?" active":"");
+        d.innerHTML=`<span>${esc(MAIN_SOURCES[src])}</span><span class="count-badge">${cnt}</span>`;
+        d.onclick=()=>selectSource(src);
+        el.appendChild(d);
+    });
+
+    // 2. 추가예정 토글 헤더 생성
+    const isCurUpcoming = Boolean(UPCOMING_SOURCES[curSource]);
+    if(isCurUpcoming) { isUpcomingOpen = true; }
+
+    const toggleD = document.createElement("div");
+    toggleD.className="menu-item has-sub" + (isUpcomingOpen ? " open" : "");
+    toggleD.style.cssText = "background:#f8fafc;font-weight:700;border-top:2px solid var(--line);";
+    toggleD.innerHTML = `<span>추가예정</span><span class="toggle-badge">${isUpcomingOpen ? "6건 ▼" : "6건 ▶"}</span>`;
+    toggleD.onclick = () => {
+        isUpcomingOpen = !isUpcomingOpen;
+        renderSources();
+    };
+    el.appendChild(toggleD);
+
+    // 3. 토글이 열려있을 때 추가예정 6개 서브메뉴 렌더링
+    if(isUpcomingOpen){
+        Object.keys(UPCOMING_SOURCES).forEach(src=>{
+            const d=document.createElement("div");
+            d.className="sub-menu-item" + (src===curSource?" active":"");
+            d.innerHTML=`<span>${esc(SOURCES[src])}</span><span class="count-badge" style="background:#eef1f5;color:var(--ink-mute);font-size:10px;padding:1px 5px;">예정</span>`;
+            d.onclick=()=>selectSource(src);
+            el.appendChild(d);
+        });
+    }
+}
+
+function selectSource(src){
+    curSource=src; curCategory=null; renderSources();
+    const el=document.getElementById("category-list"); el.innerHTML="";
+    document.getElementById("detail-list").innerHTML="";
+    if(src==="ltccalc"){ renderLtcCategories(); return; }
+    if(src==="ltcgrade"){ renderGradeCategories(); return; }
+    if(src==="caresys"){ renderCareSysCategories(); return; }
+    if(src==="carelink"){ renderCareLinkCategories(); return; }
+    if(UPCOMING_SOURCES[src]){ renderUpcomingSource(src); return; }
+    document.getElementById("information").className="info-area";
+    document.getElementById("information").innerHTML='<div class="empty-message"><span class="big">🗂️</span>구분을 선택해주세요.</div>';
+    const cats=TREE[src]||{};
+    if(Object.keys(cats).length===0){ el.innerHTML='<div class="empty-message">데이터가 없습니다.</div>'; return; }
+    Object.keys(cats).sort((a,b)=>cats[b].length-cats[a].length).forEach(cat=>{
+        const d=document.createElement("div"); d.className="menu-item";
+        d.innerHTML=`<span>${esc(cat)}</span><span class="count-badge">${cats[cat].length}</span>`;
+        d.onclick=()=>selectCategory(cat,d);
+        el.appendChild(d);
+    });
+}
+function selectCategory(cat,element){
+    curCategory=cat;
+    document.querySelectorAll(".column-2 .menu-item").forEach(i=>i.classList.remove("active"));
+    element.classList.add("active");
+    const el=document.getElementById("detail-list"); el.innerHTML="";
+    document.getElementById("information").innerHTML='<div class="empty-message"><span class="big">📄</span>세부 항목을 선택해주세요.</div>';
+    (TREE[curSource][cat]||[]).forEach(rec=>{
+        const d=document.createElement("div"); d.className="detail-item";
+        d.innerHTML=`<div class="d-title">${esc(rec.title)}</div>
+            <div class="d-meta">${kindChip(rec.kind)}<span>${esc(rec.date)}</span><span>${esc(rec.num)}</span></div>`;
+        d.onclick=()=>selectDetail(rec,d);
+        el.appendChild(d);
+    });
+}
+function selectDetail(rec,element){
+    document.querySelectorAll(".column-3 .detail-item").forEach(i=>i.classList.remove("active"));
+    element.classList.add("active");
+    const linkHtml= rec.link ? `<a class="btn-link" href="${esc(rec.link)}" target="_blank">원문 보기 ↗</a>` : "-";
+    const introHtml= rec.intro ? `<div class="intro-box">${esc(rec.intro)}</div>` : '<span style="color:var(--ink-mute)">-</span>';
+    let attHtml='<span style="color:var(--ink-mute)">첨부파일 없음</span>';
+    if(rec.attachments && rec.attachments.length){
+        attHtml='<ul class="att-list">'+rec.attachments.map(a=>{
+            const ext=extClass(a.name); const label=(a.name.toLowerCase().match(/\.([a-z0-9]+)$/)||[,"FILE"])[1].toUpperCase();
+            return `<li class="att-item">
+                <span class="att-ext ext-${ext}">${esc(label)}</span>
+                <span class="att-name">${esc(a.name)}</span>
+                <span class="att-size">${esc(a.size)}</span>
+                <a class="att-dl" href="${esc(a.url)}" target="_blank">받기</a>
+            </li>`;
+        }).join("")+'</ul>';
+    }
+    document.getElementById("information").innerHTML=`
+        <div class="info-head">
+            <div class="info-crumb"><span>${esc(SOURCES[rec.source]||rec.source)}</span> › <span>${esc(rec.category)}</span></div>
+            <div class="info-title">${esc(rec.title)}</div>
+        </div>
+        <table class="info-table"><tbody>
+            <tr><th>발령번호</th><td>${esc(rec.num)}</td></tr>
+            <tr><th>제·개정 구분</th><td>${kindChip(rec.kind)||"-"}</td></tr>
+            <tr><th>제·개정일</th><td>${esc(rec.date)}</td></tr>
+            <tr><th>담당자</th><td>${esc(rec.dept)}</td></tr>
+            <tr><th>발령문</th><td>${introHtml}</td></tr>
+            <tr><th>첨부파일</th><td>${attHtml}</td></tr>
+            <tr><th>원문 링크</th><td>${linkHtml}</td></tr>
+            <tr><th>수집일</th><td>${esc(rec.collected)}</td></tr>
+        </tbody></table>`;
+}
+window.onload=function(){
+    const total=RECORDS.length;
+    const dates=RECORDS.map(r=>r.collected).filter(Boolean).sort();
+    const last=dates.length?dates[dates.length-1]:"-";
+    document.getElementById("meta").innerHTML=`<span>자료유형 <b>고시</b>만</span><span>총 <b>${total}</b>건</span><span>최종 수집일 <b>${last}</b></span>`;
+    renderSources();
+    const first=Object.keys(SOURCES).find(s=>TREE[s]&&Object.keys(TREE[s]).length)||Object.keys(SOURCES)[0];
+    selectSource(first);
+};
+</script>
+
+<script>
+/* ================= 장기요양 급여비용 계산기 로직 ================= */
+const LTC = JSON.parse(document.getElementById("ltc-dataset").textContent || "{}");
+function wonFmt(n){ return (Math.round(n)||0).toLocaleString("ko-KR") + "원"; }
+
+function ltcGroups(){
+    const gs = (LTC.groups && LTC.groups.length) ? LTC.groups.slice() : [];
+    (LTC.services||[]).forEach(s=>{ if(gs.indexOf(s.group)<0) gs.push(s.group); });
+    return gs;
+}
+function ltcServicesIn(group){ return (LTC.services||[]).filter(s=>s.group===group); }
+
+let curLtcGroup=null, curLtcSvc=null;
+
+function renderLtcCategories(){
+    curLtcGroup=null; curLtcSvc=null;
+    const el=document.getElementById("category-list"); el.innerHTML="";
+    document.getElementById("detail-list").innerHTML="";
+    const info=document.getElementById("information");
+    info.className="calc-area";
+    info.innerHTML='<div class="empty-message"><span class="big">🧮</span>구분과 세부 서비스를 선택하면<br>급여비용 계산기가 표시됩니다.</div>';
+    ltcGroups().forEach(g=>{
+        const cnt=ltcServicesIn(g).length;
+        const d=document.createElement("div"); d.className="menu-item";
+        d.innerHTML=`<span>${esc(g)}</span><span class="count-badge">${cnt}</span>`;
+        d.onclick=()=>selectLtcGroup(g,d);
+        el.appendChild(d);
+    });
+}
+
+function selectLtcGroup(group,element){
+    curLtcGroup=group; curLtcSvc=null;
+    document.querySelectorAll(".column-2 .menu-item").forEach(i=>i.classList.remove("active"));
+    element.classList.add("active");
+    const el=document.getElementById("detail-list"); el.innerHTML="";
+    const info=document.getElementById("information");
+    info.className="calc-area";
+    info.innerHTML='<div class="empty-message"><span class="big">📄</span>세부 서비스를 선택해주세요.</div>';
+    ltcServicesIn(group).forEach(s=>{
+        const d=document.createElement("div"); d.className="detail-item";
+        const rate = s.copay>0 ? `본인부담 ${Math.round(s.copay*100)}%` : "본인부담 없음";
+        d.innerHTML=`<div class="d-title">${esc(s.name)}</div>
+            <div class="d-meta"><span class="chip">${esc(s.cat)}</span><span>${esc(s.unit)}</span><span>${rate}</span></div>`;
+        d.onclick=()=>selectLtcService(s,d);
+        el.appendChild(d);
+    });
+}
+
+function wonFmt(n){ return (Math.round(n)||0).toLocaleString("ko-KR") + "원"; }
+
+const WPM = 4.345; // 평균 주/월 (365.25/7/12)
+const PERIODS = [["1주일",7],["2주일",14],["1달",30],["3달",90],["6개월",180],["1년",365]];
+
+function selectLtcService(svc,element){
+    curLtcSvc=svc;
+    document.querySelectorAll(".column-3 .detail-item").forEach(i=>i.classList.remove("active"));
+    if(element) element.classList.add("active");
+    const facility = svc.cat==="시설";
+    const fixed = svc.fixed===true;
+    const periodMode = svc.periodMode===true;
+
+    // selection state
+    svc._optIdx = 0;
+    svc._grade = svc.grades ? svc.grades[0] : null;
+    svc._people = 1;
+    if(periodMode){ svc._days = 30; }      // 시설: 기본 1달(30일)
+    else if(fixed){ svc._freq = 1; }       // 현금급여: 1개월
+    else { svc._freq = 7; }                // 재가: 주7일
+
+    const optBtns = svc.options.map((o,i)=>
+        `<button type="button" class="opt-btn${i===0?' sel':''}" data-kind="opt" data-val="${i}">${esc(o.label)}</button>`).join("");
+    let controls="";
+    if(svc.grades){
+        const gLabel = svc.gradeLabel || "등급";
+        const gradeBtns = svc.grades.map((g,i)=>
+            `<button type="button" class="opt-btn${i===0?' sel':''}" data-kind="grade" data-val="${esc(g)}">${esc(g)}</button>`).join("");
+        controls = `
+          <div class="fld"><label>${esc(gLabel)}</label><div class="btn-group" id="grp-grade">${gradeBtns}</div></div>
+          <div class="fld"><label>${esc(svc.selectLabel)}</label><div class="btn-group" id="grp-opt">${optBtns}</div></div>`;
+    } else {
+        controls = `<div class="fld"><label>${esc(svc.selectLabel)}</label><div class="btn-group" id="grp-opt">${optBtns}</div></div>`;
+    }
+
+    // 인원수 버튼 (1,5,10,20,30,50,100 + 직접입력)
+    const peoplePresets = [1,5,10,20,30,50,100];
+    const peopleBtns = peoplePresets.map((n,i)=>
+        `<button type="button" class="opt-btn${i===0?' sel':''}" data-kind="people" data-val="${n}">${n}명</button>`).join("")
+        + `<button type="button" class="opt-btn" data-kind="people-custom">직접입력</button>`
+        + `<input type="number" class="opt-input" id="c-people-input" min="0" step="1" placeholder="명 입력" disabled>`;
+
+    // 횟수/기간 버튼
+    let freqBtns="", freqLabel="";
+    if(periodMode){
+        freqLabel = "기간";
+        freqBtns = PERIODS.map(([l,d])=>
+            `<button type="button" class="opt-btn${d===30?' sel':''}" data-kind="days" data-val="${d}">${l}</button>`).join("");
+    } else if(fixed){
+        freqLabel = "기간 (개월)";
+        freqBtns = `<button type="button" class="opt-btn sel" data-kind="freq" data-val="1">1개월</button>`
+                 + `<button type="button" class="opt-btn" data-kind="freq" data-val="3">3개월</button>`
+                 + `<button type="button" class="opt-btn" data-kind="freq" data-val="6">6개월</button>`
+                 + `<button type="button" class="opt-btn" data-kind="freq" data-val="12">12개월</button>`;
+    } else {
+        freqLabel = "횟수 (주당)";
+        const freqs = [[1,"주1회"],[3,"주3회"],[5,"주5회"],[7,"주7일"]];
+        freqBtns = freqs.map(([v,l])=>
+            `<button type="button" class="opt-btn${v===7?' sel':''}" data-kind="freq" data-val="${v}">${l}</button>`).join("");
+    }
+
+    const rateText = svc.copay>0 ? `${Math.round(svc.copay*100)}%` : "없음 (0%)";
+    const info=document.getElementById("information");
+    info.className="calc-area";
+    info.innerHTML=`
+      <div class="calc-head">
+        <div class="info-crumb"><span>장기요양 급여비용 계산기</span> › <span>${esc(svc.group)}</span> › <span>${esc(svc.name)}</span></div>
+        <div class="calc-title">${esc(svc.name)} 급여비용 계산</div>
+        <div class="calc-sub">
+          단위: <b>${esc(svc.unit)}</b> · 본인부담률: <b>${rateText}</b> · 근거: ${esc(svc.article)}<br>
+          기준: <b>${esc(LTC.meta.source)}</b>
+        </div>
+      </div>
+      <div class="svc-card on" style="max-width:660px">
+        <div class="svc-rows">
+          ${controls}
+          <div class="fld"><label>인원수</label><div class="btn-group" id="grp-people">${peopleBtns}</div></div>
+          <div class="fld"><label>${freqLabel}</label><div class="btn-group" id="grp-freq">${freqBtns}</div>
+            ${periodMode ? '<div class="freq-note">※ 선택한 기간(일수) 전체의 급여비용과 한 달(30일) 기준 급여비용을 함께 산출합니다.</div>'
+                         : (fixed ? '' : '<div class="freq-note">※ 주당 횟수 기준으로 한 달 급여비용(주 × 4.345)을 산출합니다.</div>')}
+          </div>
+        </div>
+      </div>
+      <div class="calc-summary" id="calc-summary" style="max-width:660px"></div>
+      <div class="calc-note">
+        ${periodMode
+          ? '· 산출식: 1일당 단가 × 인원수 × 일수 = 기간 급여비용 / 한 달 급여비용 = 단가 × 인원수 × 30일<br>'
+          : (fixed
+             ? '· 산출식: 월정액 단가 × 인원수 × 개월수 = 급여비용<br>'
+             : '· 산출식: 단가 × 인원수 × 주당횟수 = 1주 급여비용 → × 4.345주 = 한 달 급여비용<br>')}
+        ${svc.copay>0
+          ? '· 본인부담금 = 급여비용 × '+Math.round(svc.copay*100)+'%, 공단부담금 = 급여비용 − 본인부담금<br>'
+          : '· 특별현금급여는 수급자에게 지급되는 현금급여로 본인부담금이 없습니다.<br>'}
+        · 단가는 가산·감산 전 기본 급여비용이며, 실제 청구액은 가산·지역·감경 등에 따라 달라질 수 있습니다.<br>
+        · 출처: ${esc(LTC.meta.source)} / 참고문서: ${esc(LTC.meta.ref)}
+      </div>`;
+
+    info.querySelectorAll('.opt-btn').forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+            const kind=btn.dataset.kind;
+            const grp=btn.closest(".btn-group");
+            const cin=document.getElementById("c-people-input");
+            if(kind==="people-custom"){
+                grp.querySelectorAll(".opt-btn").forEach(b=>b.classList.remove("sel"));
+                btn.classList.add("sel");
+                cin.disabled=false; cin.focus();
+                svc._people = parseInt(cin.value,10)||0;
+                recalcOne(svc); return;
+            }
+            grp.querySelectorAll(".opt-btn").forEach(b=>b.classList.remove("sel"));
+            btn.classList.add("sel");
+            if(kind==="opt"){ svc._optIdx=parseInt(btn.dataset.val,10)||0; }
+            else if(kind==="grade"){ svc._grade=btn.dataset.val; }
+            else if(kind==="people"){ cin.disabled=true; svc._people=parseInt(btn.dataset.val,10)||0; }
+            else if(kind==="freq"){ svc._freq=parseInt(btn.dataset.val,10)||0; }
+            else if(kind==="days"){ svc._days=parseInt(btn.dataset.val,10)||0; }
+            recalcOne(svc);
+        });
+    });
+    const cin=document.getElementById("c-people-input");
+    cin.addEventListener("input", ()=>{ svc._people=parseInt(cin.value,10)||0; recalcOne(svc); });
+
+    recalcOne(svc);
+}
+
+function recalcOne(svc){
+    const opt=svc.options[svc._optIdx||0];
+    let unit;
+    if(svc.grades){ unit=opt.fees[svc._grade]||0; }
+    else { unit=opt.fee||0; }
+    const people=svc._people||0;
+    const facility = svc.cat==="시설";
+    const fixed = svc.fixed===true;
+    const periodMode = svc.periodMode===true;
+
+    const sumEl=document.getElementById("calc-summary");
+    const gradeLabel = svc.grades ? (svc._grade+" / ") : "";
+
+    let rowsHtml;
+    if(periodMode){
+        // 시설: 1일당 × 인원 × 일수
+        const days=svc._days||0;
+        const periodName=(PERIODS.find(p=>p[1]===days)||[days+"일"])[0];
+        const periodTotal=unit*people*days;
+        const monthly=unit*people*30;
+        const copayP=periodTotal*(svc.copay||0), coveredP=periodTotal-copayP;
+        const copayM=monthly*(svc.copay||0), coveredM=monthly-copayM;
+        rowsHtml = `
+          <tr><td>1일당 단가 (${gradeLabel}${esc(opt.label)})</td><td class="num">${wonFmt(unit)}</td></tr>
+          <tr class="sub"><td>인원수 × 기간</td><td class="num">${people}명 × ${periodName}(${days}일)</td></tr>
+          <tr><td>한 달 급여비용 (30일, ${people}명)</td><td class="num">${wonFmt(monthly)}</td></tr>
+          ${svc.copay>0?`<tr><td>└ 한 달 본인부담금 (${Math.round(svc.copay*100)}%)</td><td class="num">${wonFmt(copayM)}</td></tr>
+          <tr><td>└ 한 달 공단부담금</td><td class="num">${wonFmt(coveredM)}</td></tr>`:""}
+          <tr class="total"><td>${periodName} 급여비용</td><td class="num">${wonFmt(periodTotal)}</td></tr>
+          ${svc.copay>0?`<tr><td>└ 본인부담금 (${Math.round(svc.copay*100)}%)</td><td class="num">${wonFmt(copayP)}</td></tr>
+          <tr><td>└ 공단부담금</td><td class="num">${wonFmt(coveredP)}</td></tr>`:""}`;
+    } else if(fixed){
+        const freq=svc._freq||0;
+        const monthly=unit*people;
+        const periodTotal=unit*people*freq;
+        rowsHtml = `
+          <tr><td>월정액 단가 (${esc(opt.label)})</td><td class="num">${wonFmt(unit)}</td></tr>
+          <tr class="sub"><td>인원수 × 기간</td><td class="num">${people}명 × ${freq}개월</td></tr>
+          <tr><td>한 달 급여비용 (1개월, ${people}명)</td><td class="num">${wonFmt(monthly)}</td></tr>
+          <tr class="total"><td>총 급여비용 (${freq}개월)</td><td class="num">${wonFmt(periodTotal)}</td></tr>`;
+    } else {
+        const freq=svc._freq||0;
+        const weekly=unit*people*freq;
+        const monthly=Math.round(weekly*WPM);
+        const copayM=monthly*(svc.copay||0), coveredM=monthly-copayM;
+        rowsHtml = `
+          <tr><td>단가 (${gradeLabel}${esc(opt.label)})</td><td class="num">${wonFmt(unit)}</td></tr>
+          <tr class="sub"><td>인원수 × 주당 횟수</td><td class="num">${people}명 × 주 ${freq}회</td></tr>
+          <tr><td>1주 급여비용</td><td class="num">${wonFmt(weekly)}</td></tr>
+          <tr class="total"><td>한 달 급여비용 (× 4.345주)</td><td class="num">${wonFmt(monthly)}</td></tr>
+          ${svc.copay>0?`<tr><td>└ 본인부담금 (${Math.round(svc.copay*100)}%)</td><td class="num">${wonFmt(copayM)}</td></tr>
+          <tr><td>└ 공단부담금</td><td class="num">${wonFmt(coveredM)}</td></tr>`:""}`;
+    }
+
+    sumEl.innerHTML=`
+      <table>
+        <thead><tr><th>항목</th><th>금액</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>`;
+}
+</script>
+
+<script>
+/* ================= 노인장기요양보험 등급판정 & 통합돌봄 제도 & 연계서비스 전용 로직 v3 ================= */
+
+/* 23개 연계서비스 마스터 데이터 (출처: 연계서비스.md & 보건복지부 사업안내) */
+const CARE_LINK_SERVICES = {
+  "보건의료": [
+    {
+      "id": "care_visit_doc",
+      "name": "일차의료 방문진료 수가 시범사업(의과, 한의)",
+      "badge": "의료 지원",
+      "summary": "거동불편 환자 대상 의사·한의사 가정 방문진료",
+      "desc": "거동이 불편하여 의료기관에 직접 방문하기 어려운 환자를 대상으로 의사 또는 한의사가 가정을 방문하여 진찰, 처방, 질환 관리, 검사, 교육·상담 등 방문진료 의료서비스를 제공합니다.",
+      "target": "거동불편 환자 (마비, 수술 직후, 신경계 퇴행성 질환, 근골격계 질환, 인지장애 등으로 통원이 현저히 곤란한 자)",
+      "provider": "시범사업 참여 등록 의원·한의원 (1차 의료기관)",
+      "copay": "건강보험 적용 (본인부담률 통상 30%, 차상위·의료급여 감면)",
+      "keyPoint": "의과·한의과 왕진료 건강보험 수가 지원 / 질환 평가 및 처방전 발급 일체 지원",
+      "linkRole": "퇴원 후 거동불가자의 조기 재택 안착 및 불필요한 재입원 방지"
+    },
+    {
+      "id": "care_dementia_center",
+      "name": "치매관리(치매안심센터)",
+      "badge": "치매 특화",
+      "summary": "치매 조기검진, 쉼터 인지재활, 치매환자 맞춤형 사례관리",
+      "desc": "치매 조기검진(선별·진단·감별검사), 치매예방교실 및 인지자극 프로그램, 경증 치매환자 쉼터 운영, 치매환자 맞춤형 사례관리, 가족 돌봄 부담 경감 지원 등을 포괄적으로 제공합니다.",
+      "target": "관할 시·군·구 지역주민, 60세 이상 어르신, 경도인지장애인, 치매환자 및 그 가족",
+      "provider": "전국 256개 시·군·구 보건소 치매안심센터",
+      "copay": "검진 및 쉼터 프로그램 전액 무료 (소득기준 충족 시 치매치료관리비 월 3만원 상한 지원)",
+      "keyPoint": "조기 발견부터 인지재활, 실종예방 배회인식표 보급, 치매가족 자조모임 원스톱 운영",
+      "linkRole": "치매 중증화 지연 및 가족 부양부담 완화를 통한 재가돌봄 지속"
+    },
+    {
+      "id": "care_mental_center",
+      "name": "정신건강복지센터 운영",
+      "badge": "정신건강",
+      "summary": "노년기 우울증 예방, 중증정신질환자 조기발굴 및 맞춤형 사례관리",
+      "desc": "지역사회 중심의 정신질환 예방·치료·중독관리 체계 구축, 정신질환자 조기발굴, 등록 정신질환자 맞춤형 사례관리, 정신건강 상담 및 자원 연계 서비스를 무료로 제공합니다.",
+      "target": "지역사회 거주 주민 및 중증정신질환자, 노년기 우울·불안 고위험군, 자살 위기자",
+      "provider": "시·군·구 정신건강복지센터 (보건소 직영 또는 위탁)",
+      "copay": "상담 및 사례관리 전액 무료 (정신질환 치료비 지원사업 연계 가능)",
+      "keyPoint": "정신건강전문요원(간호사, 사회복지사, 임상심리사)의 1:1 가정방문 심층상담",
+      "linkRole": "고립 노인의 우울증·불안 완화 및 극단적 선택 예방을 통한 심리안전망 구축"
+    },
+    {
+      "id": "care_chronic_disease",
+      "name": "일차의료 만성질환 관리 사업",
+      "badge": "만성질환",
+      "summary": "동네의원 중심 고혈압·당뇨병 환자 지속 케어플랜 및 모니터링",
+      "desc": "동네의원 중심의 포괄적 만성질환 관리체계로, 의사 및 케어코디네이터(간호사, 영양사)가 환자별 맞춤형 케어플랜 수립, 교육·상담, 혈압·혈당 모니터링을 지속 지원합니다.",
+      "target": "의원급 의료기관에서 외래 진료를 받는 고혈압·당뇨병 환자",
+      "provider": "사업 참여 등록 동네의원 (일차의료기관)",
+      "copay": "환자관리료 본인부담 10~20% (의원급 진료비 경감 혜택 부여)",
+      "keyPoint": "자가측정 혈압·혈당 전산 연동 모니터링, 연 1회 포괄평가 및 정기 점검",
+      "linkRole": "만성질환 합병증(뇌졸중, 심근경색 등) 조기 차단 및 건강 자가관리 역량 강화"
+    },
+    {
+      "id": "care_dementia_doctor",
+      "name": "치매관리주치의 시범사업",
+      "badge": "주치의제",
+      "summary": "치매 전문의사의 포괄평가, 심층교육, 비대면 관리 및 방문진료",
+      "desc": "신경과·정신건강의학과 전문의 또는 치매전문교육을 이수한 의사가 치매환자를 포괄평가하고, 맞춤형 치료·관리계획 수립, 심층 교육·상담, 비대면 관리 및 방문진료를 지속 제공합니다.",
+      "target": "재가 거주 치매환자 (의료기관 입원 중인 환자 제외)",
+      "provider": "치매관리주치의 시범사업 참여 지정 의원·병원",
+      "copay": "건강보험 적용 (시범사업 수가 체계, 본인부담 20%)",
+      "keyPoint": "대면 진료와 함께 연간 4회 이내 방문진료 및 월 1~2회 비대면 전화 관리 제공",
+      "linkRole": "치매 환자의 문제행동(BPSD) 전문 치료 및 장기 재택 케어의 의학적 축 담당"
+    },
+    {
+      "id": "care_discharge_support",
+      "name": "퇴원환자지원 연계사업",
+      "badge": "병원-지역 연계",
+      "summary": "병원 퇴원예정자의 케어플랜 수립 및 지역사회 통합돌봄 핫라인 연결",
+      "desc": "요양병원, 급성기병원, 공공의료기관에서 퇴원(예정)하는 환자의 의료·돌봄 욕구를 포괄 평가하여 퇴원계획을 수립하고, 퇴원 후 지역사회(지자체, 보건소, 복지관 등)로 신속히 연계·정착하도록 돕습니다.",
+      "target": "요양병원 60일 이상 장기 입원자, 급성기병원 뇌혈관·중추신경계 손상 환자, 공공의료기관 퇴원예정자 등",
+      "provider": "참여 병원 퇴원지원실(환자지원팀) ↔ 시·군·구 통합돌봄 전담팀",
+      "copay": "퇴원지원 심층평가 및 연계 수가 전액 무료(건강보험 지원)",
+      "keyPoint": "퇴원 전 병원 다학제팀 상담 → 지자체 통합돌봄 창구 핫라인 연계 → 퇴원 당일 재가서비스 즉시 개시",
+      "linkRole": "치료 종료 후 돌봄 부재로 인한 '사회적 입원' 및 회전문 재입원 차단"
+    }
+  ],
+  "건강관리": [
+    {
+      "id": "health_visiting",
+      "name": "방문건강관리(보건소)",
+      "badge": "가정방문",
+      "summary": "보건소 전담간호사의 가정방문 기초건강측정, 복약지도, 건강행태 개선",
+      "desc": "보건소 간호사 등 전담인력이 가정을 방문하여 건강상태 스크리닝, 건강행태 개선, 만성질환 관리 및 보건소 내·외 자원 연계 서비스를 무료로 제공합니다.",
+      "target": "65세 이상 건강취약 노인 (노쇠예방 필요군, 장기요양 4~5등급 포함), 기초생활수급자·차상위계층, 만성질환 위험군",
+      "provider": "전국 보건소 방문건강관리 전담팀",
+      "copay": "전액 무료",
+      "keyPoint": "건강위험도에 따라 정기관리군·집중관리군으로 분류하여 연 4~8회 이상 집중 방문",
+      "linkRole": "지역사회 내 잠재적 위기 어르신 조기 발견 및 보건-복지 통합연계 시발점"
+    },
+    {
+      "id": "health_exercise",
+      "name": "건강백세운동교실",
+      "badge": "신체활동",
+      "summary": "경로당·복지관 중심 전문강사의 맞춤형 낙상예방 및 근력강화 운동 강습",
+      "desc": "국민건강보험공단 주관으로 경로당, 복지관, 도심공원 등에서 전문 운동강사가 주 2~3회 체조, 요가, 치매예방운동, 낙상예방 등 신체활동 강습 및 건강강좌를 제공합니다.",
+      "target": "건강백세운동교실 참여 희망 지역주민 및 어르신 (연령 제한 없음)",
+      "provider": "국민건강보험공단 전국 지사",
+      "copay": "전액 무료",
+      "keyPoint": "낙상사고 예방 하체근력 강화, 인지 복합 운동, 사회적 고립감 해소",
+      "linkRole": "노인성 근감소증 및 낙상사고 예방을 통한 장기요양 진입 지연"
+    },
+    {
+      "id": "health_ai_iot",
+      "name": "AI·IoT기반 어르신 건강관리",
+      "badge": "스마트케어",
+      "summary": "블루투스 건강측정기 및 '오늘건강' 앱을 통한 6개월 비대면 미션 컨설팅",
+      "desc": "스마트기기(블루투스 체중계, 혈압·혈당계, 활동량계, AI스피커)와 '오늘건강' 앱을 활용하여 6개월간 비대면 건강미션 실천 및 상시 모니터링·맞춤형 컨설팅을 지원합니다.",
+      "target": "노쇠 및 만성질환 예방·관리가 필요한 65세 이상 어르신",
+      "provider": "시·군·구 보건소 디지털헬스케어팀",
+      "copay": "스마트기기 무상 대여 및 서비스 전액 무료",
+      "keyPoint": "매일 걷기·혈압측정 등 미션 달성 시 인센티브 제공, 이상 수치 감지 시 보건소 즉시 유선 상담",
+      "linkRole": "ICT 기반의 일상적 자가건강관리 습관 형성 및 고독사 위험 모니터링 병행"
+    },
+    {
+      "id": "health_polypharmacy",
+      "name": "다제약물관리사업",
+      "badge": "약물안전",
+      "summary": "약사·간호사 팀 가정방문, 10종 이상 다제 복용 약물 점검 및 중복처방 조정",
+      "desc": "약사 및 공단 간호사 등으로 구성된 전문가 팀이 가정을 방문하여 복용 중인 약물을 점검·상담하고, 불필요한 약물 중복이나 부작용을 예방하도록 처방 조정을 지원합니다.",
+      "target": "만성질환자 중 서로 다른 성분의 약을 10종 이상 상시(6개월간 60일 이상) 복용하는 건강보험 가입자",
+      "provider": "국민건강보험공단 & 지역 약사회 (병원 퇴원환자형 / 지역사회 의원 연계형)",
+      "copay": "전액 무료",
+      "keyPoint": "약물 중복, 금기약물, 유사효능 점검 후 담당 처방의사에게 약물조정 자문서 전달",
+      "linkRole": "노인 다제약물 복용으로 인한 어지럼증, 낙상, 인지저하 부작용 획기적 경감"
+    },
+    {
+      "id": "health_chronic_support",
+      "name": "만성질환 건강지원사업",
+      "badge": "질환상담",
+      "summary": "혈압·혈당계 대여, 건강생활실천 알림, 적정투약 관리 및 영양상담 지원",
+      "desc": "맞춤형 건강생활실천 알림문자 발송, 혈압·혈당 측정기 대여 및 소모품 지원, 적정투약 관리, 질환별 건강교실 및 개별 건강상담을 지원합니다.",
+      "target": "고혈압·당뇨병 환자 중 사업 참여 희망 건강보험 가입자",
+      "provider": "국민건강보험공단 지사 만성질환관리센터",
+      "copay": "전액 무료",
+      "keyPoint": "자가 혈압·혈당 측정기 및 시험지 무상 대여, 복약순응도 향상 관리",
+      "linkRole": "1차 의료기관 진료와 결합한 생활밀착형 만성질환 상시 지지체계 확립"
+    }
+  ],
+  "장기요양": [
+    {
+      "id": "ltc_home_benefit",
+      "name": "장기요양 재가급여",
+      "badge": "돌봄 핵심",
+      "summary": "방문요양, 방문목욕, 방문간호, 주야간보호, 단기보호 및 복지용구 지원",
+      "desc": "고령이나 노인성 질병으로 일상생활 수행이 어려운 수급자의 가정에 요양보호사, 간호사 등이 방문하거나 기관에서 신체활동·가사활동 지원, 간호·목욕, 보호 및 복지용구를 제공합니다.",
+      "target": "노인장기요양보험 1~5등급 및 인지지원등급 인정자",
+      "provider": "전국 장기요양기관 (재가장기요양기관, 주·야간보호센터 등)",
+      "copay": "급여비용의 15% (경감대상 6%·9%, 기초생활수급자 전액 무료)",
+      "keyPoint": "2026년 1등급 월 한도액 2,512,900원, 종일 방문요양(1회 98,860원+가산 78,820원) 등 맞춤 조합",
+      "linkRole": "통합돌봄 체계에서 가장 핵심적인 일상생활 수발 및 가사 지원 인프라"
+    },
+    {
+      "id": "ltc_short_respite",
+      "name": "주·야간 보호기관 내 단기보호 시범사업",
+      "badge": "단기숙박",
+      "summary": "이용 중인 주야간보호센터에서 월 9일 이내 단기 숙박·돌봄 제공",
+      "desc": "기존에 이용하던 주·야간보호기관의 정원·시설 인프라를 활용하여 재가 수급자가 일정 기간(월 9일 이내) 기관에 입소하여 단기보호 서비스를 받을 수 있도록 지원합니다.",
+      "target": "장기요양 1~5등급 수급자 (해당 주야간보호기관 이용자 우선)",
+      "provider": "단기보호 시범사업 참여 지정 주·야간보호센터",
+      "copay": "장기요양 재가급여 본인부담률 준용 (15%) + 식사재료비 실비",
+      "keyPoint": "낯선 요양시설이 아닌 평소 다니던 주야간보호센터에서 안심하고 단기 숙박 가능",
+      "linkRole": "보호자의 갑작스러운 입원·경조사·출장 시 돌봄 공백 해소 및 탈시설 유지"
+    },
+    {
+      "id": "ltc_home_medical_center",
+      "name": "장기요양 재택의료센터 시범사업",
+      "badge": "치료∩돌봄",
+      "summary": "의사(월1회)+간호사(월2회)+사회복지사 팀 가정방문 다학제 진료·간호",
+      "desc": "지정된 의료기관의 의사(월 1회 이상), 간호사(월 2회 이상), 사회복지사 다학제 팀이 가정을 방문하여 정기적인 방문진료·간호, 포괄평가, 케어플랜 수립 및 돌봄 연계를 제공합니다.",
+      "target": "재가 거주 장기요양 1~5등급 수급자 중 거동불편으로 재택의료 필요 판단자",
+      "provider": "전국 229개 시·군·구 422개소 지정 재택의료센터(의원, 병원 등)",
+      "copay": "건강보험 및 장기요양보험 수가 적용 (본인부담 일부, 지자체 지원 연계)",
+      "keyPoint": "의사·간호사·복지사가 원팀으로 방문하여 욕창, 도뇨관, 만성질환 집중 치료 및 케어플랜 관리",
+      "linkRole": "치료와 돌봄이 만나는 핵심 메커니즘으로 요양병원 사회적 입원 방지의 일등공신"
+    },
+    {
+      "id": "ltc_integrated_home",
+      "name": "장기요양 통합재가서비스",
+      "badge": "원스톱패키지",
+      "summary": "단일 기관에서 방문요양·방문간호·방문목욕·주야간보호를 복합 통합 제공",
+      "desc": "수급자가 여러 기관을 거치지 않고 단일 장기요양기관에서 방문요양, 방문간호, 방문목욕, 주·야간보호, 단기보호 등 다양한 재가급여를 맞춤형으로 묶어 종합 제공받습니다.",
+      "target": "장기요양 1~5등급 수급자 중 통합재가서비스 신청자",
+      "provider": "국민건강보험공단 지정 통합재가서비스 제공기관",
+      "copay": "장기요양 월 한도액 범위 내 본인부담 15%",
+      "keyPoint": "전담 간호사(사례관리자)가 어르신의 상태 변화를 상시 모니터링하고 서비스 일정 통합 조율",
+      "linkRole": "파편화된 재가서비스를 대상자 중심 단일 창구로 묶어 돌봄의 연속성 확보"
+    },
+    {
+      "id": "ltc_family_vacation",
+      "name": "장기요양 가족 휴가제",
+      "badge": "가족휴식",
+      "summary": "월 한도액 외 연간 단기보호 12일 또는 종일방문요양 24회 이용 지원",
+      "desc": "수급자를 돌보는 가족의 휴식과 수발 부담 경감을 위해 월 한도액과 상관없이 단기보호급여(연간 12일) 또는 종일방문요양급여(연간 24회) 이용을 지원합니다.",
+      "target": "장기요양 1·2등급 수급자 및 치매가 있는 3~5등급·인지지원등급 수급자",
+      "provider": "단기보호기관 및 종일방문요양 제공 장기요양기관",
+      "copay": "월 한도액 미차감, 급여비용의 15% 본인부담",
+      "keyPoint": "가족 돌봄자의 소진(Burnout) 예방, 치매환자 가족의 안심 휴식 보장",
+      "linkRole": "가족의 돌봄 피로 누적으로 인한 성급한 시설 입소를 예방하고 가정 돌봄 유지"
+    }
+  ],
+  "일상생활돌봄": [
+    {
+      "id": "life_custom_care",
+      "name": "노인맞춤돌봄서비스",
+      "badge": "안부·가사",
+      "summary": "생활지원사 가정방문 안전안부확인, 일상가사, 사회참여, 생활교육 지원",
+      "desc": "생활지원사 및 전담사회복지사가 방문·통화 서비스를 통해 안전확인, 정서지원, 신체·정신건강 교육, 가사지원 및 외출동행 등 맞춤형 돌봄을 무료로 제공합니다.",
+      "target": "65세 이상 기초생활수급자, 차상위계층 또는 기초연금수급자 중 독거·조손 등 돌봄 필요자",
+      "provider": "시·군·구 권역별 노인맞춤돌봄서비스 수행기관(노인복지관, 종합사회복지관 등)",
+      "copay": "전액 무료",
+      "keyPoint": "중점돌봄군(월 16~40시간) / 일반돌봄군(월 16시간 미만) 맞춤 케어플랜 제공",
+      "linkRole": "장기요양 등급 이전 단계 취약 어르신의 일상 안전망 유지 및 악화 예방"
+    },
+    {
+      "id": "life_emergency_safety",
+      "name": "독거노인·장애인 응급안전안심서비스",
+      "badge": "ICT안전망",
+      "summary": "댁내 화재·활동감지센서, 119 응급호출기 설치 24시간 실시간 모니터링",
+      "desc": "댁내에 ICT 응급호출기, 화재감지기, 활동량감지기, 출입감지기 등을 설치하여 화재·응급상황 발생 시 119 및 응급관리요원에게 신속히 연결·구조되도록 지원합니다.",
+      "target": "스스로 응급상황 대처가 어려운 독거노인(65세 이상 수급자·차상위·기초연금수급자) 및 중증장애인",
+      "provider": "지자체 응급안전안심서비스 지역센터 ↔ 소방청 119상황실 연계",
+      "copay": "기기 설치 및 모니터링 전액 무료",
+      "keyPoint": "낙상 실신 등 무활동 감지 시 응급관리요원 즉시 출동, 화재 시 119 자동 출동 신고",
+      "linkRole": "독거 가구의 24시간 365일 비대면 안심망 구축으로 고독사 및 안전사고 원천 차단"
+    },
+    {
+      "id": "life_emergency_care",
+      "name": "긴급돌봄 지원사업",
+      "badge": "긴급 돌봄",
+      "summary": "사고·질병·돌봄공백 시 최대 72시간 한시적 재가돌봄·가사·이동 지원",
+      "desc": "갑작스러운 사고, 질병, 부상, 재난, 주 돌봄자의 부재 등으로 긴급하고 일시적인 돌봄 공백이 발생했을 때 신속하게 단기·집중적 돌봄(기본돌봄, 방문목욕 등)을 제공하여 돌봄 분야 사회안전망 역할을 수행합니다.",
+      "target": "사고·질병·부상·재난·주돌봄자 부재 등으로 일시적 돌봄이 필요한 만 13세 이상 국민 (소득 무관 누구나 신청 가능, 긴급돌봄위원회 심의 시 연령 제한 예외 가능)",
+      "provider": "시·군·구 지정 긴급돌봄 제공기관 (사회서비스원, 지역자활센터 등)",
+      "copay": "소득별 차등 (기초생활수급자 및 차상위계층 0% 면제, 중위소득 160% 초과자 전액 100% 본인부담, 구간별 차등 지원)",
+      "keyPoint": "기본돌봄(시간당 19,000원 - 신체청결·식사도움·가사·외출동행), 방문목욕(회당 88,000원 - 차량이용) / 최대 72시간(1일 최대 8시간, 30일 이내 권고, 90일 내 완료)",
+      "linkRole": "통합판정조사 결과 대기 중 긴급한 돌봄이 필요한 경우 읍·면·동 담당자가 '서식9 추천'을 통해 선(先)지원으로 신속 연계"
+    }
+  ],
+  "기타": [
+    {
+      "id": "etc_lonely_death",
+      "name": "고독사 예방 및 관리사업",
+      "badge": "고립 예방",
+      "summary": "고독사 위험군 조기 발굴, AI 안부전화, 생활환경 개선 및 공동체 연결",
+      "desc": "고독사위기대응시스템 및 지자체 조사를 통해 고독사 고위험군을 발굴·선별하고, 주기적 안부 확인, 생활환경 개선, 생애주기별 맞춤형 사회적 고립 예방 프로그램을 연계합니다.",
+      "target": "청년, 중·장년, 노인 등 고독사 위험자 판단도구를 통해 선별된 사회적 고립 가구",
+      "provider": "시·군·구 희망복지지원단, 읍·면·동 찾아가는 보건복지팀, 지역사회보장협의체",
+      "copay": "전액 무료",
+      "keyPoint": "AI 케어콜 주기적 안부 확인, IoT 스마트 플러그 전력사용량 모니터링, 마을 공동체 프로그램",
+      "linkRole": "사회적으로 단절된 1인 취약가구를 지역사회 돌봄 네트워크로 편입"
+    },
+    {
+      "id": "etc_case_management",
+      "name": "통합사례관리사업",
+      "badge": "총괄 조정",
+      "summary": "복합 위기가구 대상 보건·복지·고용·주거 등 공공·민간 자원 원스톱 통합연계",
+      "desc": "시·군·구 희망복지지원단 및 읍·면·동 찾아가는 보건복지팀이 주도가 되어 위기가구의 복지·보건·고용·주거·교육·법률 등 복합적인 욕구를 파악하고 공공·민간 자원을 종합 연계·관리합니다.",
+      "target": "복지 사각지대 위기가구, 수급자, 차상위계층 등 복합적 돌봄·생계 욕구가 있는 가구",
+      "provider": "시·군·구 희망복지지원단 전담 통합사례관리사",
+      "copay": "전액 무료 (가구별 긴급복지 지원금 및 민간 후원금 연계)",
+      "keyPoint": "가구별 목표 설정 및 다학제 사례회의를 거쳐 맞춤형 공공·민간 복지자원 집중 투입",
+      "linkRole": "돌봄뿐 아니라 주거, 생계, 의료비 등 가구 전체의 복합 위기를 근본적으로 해결"
+    },
+    {
+      "id": "etc_daily_care",
+      "name": "일상돌봄서비스 사업",
+      "badge": "바우처",
+      "summary": "돌봄필요 중장년 및 가족돌봄청년 대상 재가돌봄, 가사, 식사, 병원동행 바우처",
+      "desc": "기본서비스(재가돌봄·가사 지원)와 특화서비스(식사영양관리, 심리지원, 병원동행 등)를 바우처 형태로 제공하여 대상자가 필요에 따라 선택 이용하도록 돕습니다.",
+      "target": "질병·부상·고립으로 돌봄이 필요한 중·장년(19~64세) 및 아픈 가족을 돌보는 가족돌봄청년(13~39세)",
+      "provider": "지자체 지정 사회서비스 제공기관 (전자바우처 카드 결제)",
+      "copay": "소득수준(중위소득)에 따라 차등 지원 (본인부담 0%~100%)",
+      "keyPoint": "기존 노인 중심 돌봄의 사각지대였던 청·중장년 취약계층까지 돌봄 안전망 확장",
+      "linkRole": "지역사회 돌봄 공백 계층의 자립 지원 및 가족 돌봄 부담의 사회적 분담"
+    },
+    {
+      "id": "etc_home_medical_benefit",
+      "name": "재가의료급여 사업",
+      "badge": "퇴원 정착",
+      "summary": "장기입원 의료급여 수급자 퇴원 후 재가정착금, 의료, 돌봄, 식사, 이동 패키지",
+      "desc": "장기입원 중인 의료급여 수급자의 퇴원 후 재가 정착을 위해 협력의료기관 케어플랜 기반의 의료 지원과 함께 가사·돌봄, 식사 배달, 병원 이동지원, 주거환경 개선(연간 200만 원 이내)을 통합 패키지로 지원합니다.",
+      "target": "동일상병으로 31일 이상 장기 입원 중인 의료급여 수급권자 중 퇴원 후 재가 생활이 가능한 자",
+      "provider": "시·군·구 의료급여관리사 ↔ 협력의료기관 케어팀",
+      "copay": "의료급여 기금 전액 무료 지원",
+      "keyPoint": "재가정착금(연 200만원 한도 가전·주거개조 지원) + 월 60만원 상당 식사·이동·돌봄 패키지",
+      "linkRole": "의료급여 재정 건전화와 취약계층의 성공적인 탈시설 및 지역사회 안착 달성"
+    }
+  ]
+};
+
+/* ================= [1] 노인장기요양보험 등급판정 로직 ================= */
+let curGradeCat = null;
+
+function renderGradeCategories() {
+    curLtcGroup = null; curLtcSvc = null;
+    const catEl = document.getElementById("category-list");
+    catEl.innerHTML = "";
+    document.getElementById("detail-list").innerHTML = "";
+    const info = document.getElementById("information");
+    info.className = "info-area";
+    info.innerHTML = '<div class="empty-message"><span class="big">📋</span>구분을 선택해주세요.<br><span style="font-size:12.5px;color:var(--ink-mute);margin-top:6px;display:inline-block">등급판정 절차 또는 판정등급 내용을 선택할 수 있습니다.</span></div>';
+
+    // 1. 등급판정 절차
+    const dProc = document.createElement("div");
+    dProc.className = "menu-item" + (curGradeCat === "proc" ? " active" : "");
+    dProc.innerHTML = `<span>등급판정 절차</span><span class="count-badge">1</span>`;
+    dProc.onclick = () => selectGradeProc(dProc);
+    catEl.appendChild(dProc);
+
+    // 2. 판정등급 내용
+    const dGrades = document.createElement("div");
+    dGrades.className = "menu-item" + (curGradeCat === "grades" ? " active" : "");
+    dGrades.innerHTML = `<span>판정등급 내용</span><span class="count-badge">7</span>`;
+    dGrades.onclick = () => selectGradeList(dGrades);
+    catEl.appendChild(dGrades);
+}
+
+function selectGradeProc(el) {
+    curGradeCat = "proc";
+    document.querySelectorAll(".column-2 .menu-item").forEach(i => i.classList.remove("active"));
+    el.classList.add("active");
+
+    const dList = document.getElementById("detail-list");
+    dList.innerHTML = "";
+
+    // 세부 [절차] (하단 박스 없이 깔끔하게)
+    const dItem = document.createElement("div");
+    dItem.className = "detail-item active";
+    dItem.innerHTML = `<div class="d-title">절차</div>
+        <div class="d-meta"><span>6단계 프로세스</span><span>국민건강보험공단</span></div>`;
+    dItem.onclick = () => {
+        document.querySelectorAll(".column-3 .detail-item").forEach(i => i.classList.remove("active"));
+        dItem.classList.add("active");
+        renderGradeProcDiagram();
+    };
+    dList.appendChild(dItem);
+
+    renderGradeProcDiagram();
+}
+
+function selectGradeList(el) {
+    curGradeCat = "grades";
+    document.querySelectorAll(".column-2 .menu-item").forEach(i => i.classList.remove("active"));
+    el.classList.add("active");
+
+    const dList = document.getElementById("detail-list");
+    dList.innerHTML = "";
+
+    const gradesData = [
+        { id: "all", name: "전체 등급 비교 총괄", score: "1~5등급 및 인지지원", limit: "월 67.6만 ~ 251.2만" },
+        { id: "g1", name: "1등급 (최중증)", score: "95점 이상", limit: "월 2,512,900원" },
+        { id: "g2", name: "2등급 (중증)", score: "75점 이상 95점 미만", limit: "월 2,331,200원" },
+        { id: "g3", name: "3등급 (중등도)", score: "60점 이상 75점 미만", limit: "월 1,528,200원" },
+        { id: "g4", name: "4등급 (경증)", score: "51점 이상 60점 미만", limit: "월 1,409,700원" },
+        { id: "g5", name: "5등급 (치매)", score: "45점 이상 51점 미만", limit: "월 1,208,900원" },
+        { id: "g_cogni", name: "인지지원등급", score: "45점 미만 치매환자", limit: "월 676,320원" }
+    ];
+
+    gradesData.forEach((g, idx) => {
+        const dItem = document.createElement("div");
+        dItem.className = "detail-item" + (idx === 0 ? " active" : "");
+        dItem.innerHTML = `<div class="d-title">${esc(g.name)}</div>
+            <div class="d-meta"><span>${esc(g.score)}</span><span>${esc(g.limit)}</span></div>`;
+        dItem.onclick = () => {
+            document.querySelectorAll(".column-3 .detail-item").forEach(i => i.classList.remove("active"));
+            dItem.classList.add("active");
+            renderGradeDetail(g.id);
+        };
+        dList.appendChild(dItem);
+    });
+
+    renderGradeDetail("all");
+}
+
+/* ================= [2] 통합돌봄 제도 개요 로직 ================= */
+let curCareSysCat = null;
+
+function renderCareSysCategories() {
+    curLtcGroup = null; curLtcSvc = null;
+    const catEl = document.getElementById("category-list");
+    catEl.innerHTML = "";
+    document.getElementById("detail-list").innerHTML = "";
+
+    // 1. 통합돌봄 절차 구분
+    const dProcCat = document.createElement("div");
+    dProcCat.className = "menu-item active";
+    dProcCat.innerHTML = `<span>통합돌봄 절차</span><span class="count-badge">1</span>`;
+    dProcCat.onclick = () => selectCareSysCategory("proc", dProcCat);
+    catEl.appendChild(dProcCat);
+
+    // 2. 지원 내용 구분
+    const dContentCat = document.createElement("div");
+    dContentCat.className = "menu-item";
+    dContentCat.innerHTML = `<span>통합돌봄 지원 내용</span><span class="count-badge">1</span>`;
+    dContentCat.onclick = () => selectCareSysCategory("content", dContentCat);
+    catEl.appendChild(dContentCat);
+
+    // 기본으로 "절차" 구분 선택
+    selectCareSysCategory("proc", dProcCat);
+}
+
+function selectCareSysCategory(catKind, el) {
+    curCareSysCat = catKind;
+    document.querySelectorAll(".column-2 .menu-item").forEach(i => i.classList.remove("active"));
+    el.classList.add("active");
+
+    const dList = document.getElementById("detail-list");
+    dList.innerHTML = "";
+
+    if (catKind === "proc") {
+        const dProc = document.createElement("div");
+        dProc.className = "detail-item active";
+        dProc.innerHTML = `<div class="d-title">절차</div><div class="d-meta"><span>8단계 통합돌봄 추진 절차</span><span>지자체 중심</span></div>`;
+        dProc.onclick = () => { document.querySelectorAll(".column-3 .detail-item").forEach(i => i.classList.remove("active")); dProc.classList.add("active"); renderCareProcDiagram(); };
+        dList.appendChild(dProc);
+        renderCareProcDiagram();
+    } else {
+        // 지원 내용 구분 선택 시 - "슬라이드15" 박스 삭제 완료!
+        const dContent = document.createElement("div");
+        dContent.className = "detail-item active";
+        dContent.innerHTML = `<div class="d-title">지원 내용</div>
+            <div class="d-meta"><span>5대 영역 연계서비스</span><span>특화서비스</span></div>`;
+        dContent.onclick = () => {
+            document.querySelectorAll(".column-3 .detail-item").forEach(i => i.classList.remove("active"));
+            dContent.classList.add("active");
+            renderCareContentDetail();
+        };
+        dList.appendChild(dContent);
+
+        renderCareContentDetail();
+    }
+}
+
+/* ================= [3] 통합돌봄 제도 연계 서비스 로직 ================= */
+let curCareLinkCat = null;
+
+function renderCareLinkCategories() {
+    curLtcGroup = null; curLtcSvc = null;
+    const catEl = document.getElementById("category-list");
+    catEl.innerHTML = "";
+    document.getElementById("detail-list").innerHTML = "";
+    const info = document.getElementById("information");
+    info.className = "info-area";
+    info.innerHTML = '<div class="empty-message"><span class="big">🌐</span>통합돌봄 제도 연계서비스 구분을 선택해주세요.<br><span style="font-size:12.5px;color:var(--ink-mute);margin-top:6px;display:inline-block">보건의료, 건강관리, 장기요양, 일상생활돌봄, 기타 영역이 있습니다.</span></div>';
+
+    const categories = ["보건의료", "건강관리", "장기요양", "일상생활돌봄", "기타"];
+    categories.forEach((catName, idx) => {
+        const cnt = CARE_LINK_SERVICES[catName] ? CARE_LINK_SERVICES[catName].length : 0;
+        const d = document.createElement("div");
+        d.className = "menu-item" + (idx === 0 ? " active" : "");
+        d.innerHTML = `<span>${esc(catName)}</span><span class="count-badge">${cnt}</span>`;
+        d.onclick = () => selectCareLinkCategory(catName, d);
+        catEl.appendChild(d);
+    });
+
+    selectCareLinkCategory("보건의료", catEl.children[0]);
+}
+
+function selectCareLinkCategory(catName, el) {
+    curCareLinkCat = catName;
+    document.querySelectorAll(".column-2 .menu-item").forEach(i => i.classList.remove("active"));
+    el.classList.add("active");
+
+    const dList = document.getElementById("detail-list");
+    dList.innerHTML = "";
+
+    const list = CARE_LINK_SERVICES[catName] || [];
+    list.forEach((svc, idx) => {
+        const dItem = document.createElement("div");
+        dItem.className = "detail-item" + (idx === 0 ? " active" : "");
+        // "의료지원", "치매특화" 등 박스(chip) 제거 완료! 요약만 깔끔하게 표시
+        dItem.innerHTML = `<div class="d-title">${esc(svc.name)}</div>
+            <div class="d-meta"><span>${esc(svc.summary)}</span></div>`;
+        dItem.onclick = () => {
+            document.querySelectorAll(".column-3 .detail-item").forEach(i => i.classList.remove("active"));
+            dItem.classList.add("active");
+            renderCareLinkDetail(svc, catName);
+        };
+        dList.appendChild(dItem);
+    });
+
+    if (list.length > 0) {
+        renderCareLinkDetail(list[0], catName);
+    }
+}
+
+function renderCareLinkDetail(svc, catName) {
+    const info = document.getElementById("information");
+    info.className = "info-area";
+
+    info.innerHTML = `
+      <div class="info-head">
+        <div class="info-crumb"><span>통합돌봄 제도 연계 서비스</span> › <span>${esc(catName)}</span> › <span>${esc(svc.name)}</span></div>
+        <div class="info-title">${esc(svc.name)}</div>
+      </div>
+
+      <div class="proc-hero" style="margin-bottom:18px;">
+        <div class="proc-hero-title">
+          <span class="pill">${esc(catName)}</span>
+          <span>${esc(svc.summary)}</span>
+        </div>
+        <div class="proc-hero-desc">${esc(svc.desc)}</div>
+      </div>
+
+      <table class="info-table">
+        <tbody>
+          <tr>
+            <th style="width:130px;">서비스명</th>
+            <td><b>${esc(svc.name)}</b></td>
+          </tr>
+          <tr>
+            <th>지원 내용</th>
+            <td>${esc(svc.desc)}</td>
+          </tr>
+          <tr>
+            <th>지원 대상</th>
+            <td><b>${esc(svc.target)}</b></td>
+          </tr>
+          <tr>
+            <th>제공 기관</th>
+            <td>${esc(svc.provider)}</td>
+          </tr>
+          <tr>
+            <th>본인부담금</th>
+            <td>${esc(svc.copay)}</td>
+          </tr>
+          <tr>
+            <th>주요 특징</th>
+            <td>${esc(svc.keyPoint)}</td>
+          </tr>
+          <tr>
+            <th>통합돌봄 연계 역할</th>
+            <td><b style="color:var(--accent);">${esc(svc.linkRole)}</b></td>
+          </tr>
+          <tr>
+            <th>참고 근거</th>
+            <td>「2026년 의료·요양 통합돌봄 사업 안내」(보건복지부) 및 <a href="#" onclick="return false;">연계서비스.md</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-block" style="margin-top:18px;background:#f8fafc;">
+        <div class="section-block-title">💡 ${esc(svc.name)} 실무 연계 가이드</div>
+        <div style="font-size:12.5px;color:var(--ink);line-height:1.7;">
+          · 읍·면·동 통합돌봄 전담창구 또는 시·군·구 통합돌봄과에서 <b>통합지원조사</b> 후 대상자의 필요도가 확인되면 해당 서비스 제공기관으로 즉시 의뢰 연계됩니다.<br>
+          · 복합적인 다중 욕구(예: 거동불편 + 만성질환 + 주거취약)를 가진 어르신의 경우, <b>${esc(catName)} 영역</b> 외 타 영역(장기요양, 일상돌봄 등)과 패키지로 결합 제공됩니다.
+        </div>
+      </div>
+    `;
+}
+
+/* ================= 기존 공통 렌더러 (등급판정 6단계 설명 등) ================= */
+function renderGradeProcDiagram() {
+    const steps=[
+      {title:"인정신청 및 접수",actor:"본인·가족·대리인 → 공단",short:"신청서와 구비서류 제출",body:`<p>수급 희망자 본인, 가족, 친족 또는 대리인이 국민건강보험공단에 장기요양인정을 신청합니다.</p><ul><li><b>신청 방법:</b> 방문, 우편, 팩스, 인터넷, The건강보험 앱</li><li><b>구비 서류:</b> 장기요양인정신청서, 본인 및 대리인 신분증</li><li>65세 미만 신청자는 치매, 뇌혈관질환 등 법령상 노인성 질병을 확인할 수 있는 진단서 또는 의사소견서를 함께 제출해야 합니다. 신청서 접수 후 공단이 방문조사 일정을 안내합니다.</li></ul>`},
+      {title:"방문조사 실시",actor:"건보공단 전문조사원",short:"실거주지에서 심신상태 조사",body:`<p>공단 소속 간호사·사회복지사가 신청인의 실거주지를 방문하여 심신상태를 조사합니다.</p><ul><li><b>조사 도구:</b> 장기요양 인정조사표 52개 항목</li><li>신체기능, 인지기능, 행동변화, 간호처치, 재활 영역을 확인합니다.</li><li>신체기능 12개, 인지기능 7개, 행동변화 14개, 간호처치 9개, 재활 10개 항목을 살피며 수발 부담, 주거환경과 특기사항도 함께 파악합니다. 신청인과 가족은 평소 상태와 도움이 필요한 상황을 조사원에게 구체적으로 설명할 수 있습니다.</li></ul>`},
+      {title:"1차 판정 (컴퓨터 판정)",actor:"공단 전산 시스템",short:"조사결과 입력 및 인정점수 산출",body:`<p>방문조사 결과를 전산 시스템에 입력해 영역별 수발 필요시간과 장기요양 인정점수를 산출합니다.</p><ul><li>52개 조사항목 점수를 통계적 수발시간으로 환산합니다.</li><li>인정점수와 점수 구간별 1차 추정 등급을 도출합니다. 이 결과는 위원회 심의의 기초 자료이며, 최종 등급은 조사내용과 의사소견서 등을 종합해 결정됩니다.</li></ul>`},
+      {title:"의사소견서 제출",actor:"의료기관·신청인",short:"의학적 상태에 대한 소견 제출",body:`<p>공단 안내에 따라 병·의원에서 의사소견서를 발급받아 제출합니다.</p><ul><li><b>발급 주체:</b> 의사 또는 한의사</li><li>신청인의 주요 진단, 만성질환, 치매 여부와 일상생활에 미치는 영향을 기재합니다. 공단이 안내한 제출 기한과 제출 방법을 확인해야 하며, 일부 대상은 의사소견서 제출이 면제되거나 제출 시기가 별도로 안내될 수 있습니다.</li><li>거동이 어려운 경우 방문진료 또는 발급의뢰서를 활용할 수 있습니다.</li></ul>`},
+      {title:"등급판정 심의·의결",actor:"시·군·구 등급판정위원회",short:"조사결과와 의사소견서 종합 심의",body:`<p>등급판정위원회가 조사결과, 의사소견서와 특기사항을 종합 심의해 최종 등급을 결정합니다.</p><ul><li>위원회는 의사·간호사·사회복지사 등 보건·복지 분야 전문가 15인으로 구성됩니다. 조사자의 방문조사 결과와 컴퓨터 판정 점수, 의사소견서, 특기사항을 함께 검토해 심신상태와 실제 도움이 필요한 정도를 심의합니다.</li><li><b>판정 결과:</b> 1~5등급, 인지지원등급 또는 등급외(A·B·C)</li></ul>`},
+      {title:"결과 통보 및 급여 이용",actor:"건보공단 → 신청인",short:"인정서 발송 후 장기요양급여 이용",body:`<p>공단이 판정 결과를 통보하고 장기요양인정서와 개인별 장기요양이용계획서 등을 송부합니다. 수급자와 가족은 계획서에 안내된 급여 종류와 이용 절차를 확인한 뒤 원하는 장기요양기관과 계약해 서비스를 시작합니다.</p><ul><li><b>송부 서류:</b> 장기요양인정서와 개인별 장기요양이용계획서 등</li><li><b>급여 개시:</b> 재가기관 또는 노인요양시설과 계약</li><li>인정 유효기간과 갱신 신청 시기는 통보서에서 확인합니다.</li></ul>`}
+    ];
+    renderAlgorithmFlow({kind:"grade",crumb:"등급판정 절차",title:"노인장기요양보험 등급판정 절차",heading:"등급판정 6단계 알고리즘 순서도",pill:"신청부터 결과 통보까지",desc:"각 단계를 클릭하면 순서도 아래에서 해당 절차의 상세 내용을 확인할 수 있습니다.",steps});
+}
+
+function renderAlgorithmFlow({kind,crumb,title,heading,pill,desc,steps}) {
+    const info=document.getElementById("information"); info.className="info-area";
+    info.innerHTML=`<div class="info-head"><div class="info-crumb"><span>${kind==="grade"?"노인장기요양보험 등급판정":"통합돌봄 제도 개요"}</span> › <span>${crumb}</span> › <span>절차</span></div><div class="info-title">${title}</div></div><div class="proc-hero"><div class="proc-hero-title"><span class="pill">${pill}</span>${heading}</div><div class="proc-hero-desc">${desc}</div>${kind==="grade"?`<div class="proc-summary-grid"><div class="proc-summary-item"><b>신청 대상</b>65세 이상 또는 65세 미만 노인성 질병 보유자</div><div class="proc-summary-item"><b>신청 장소</b>국민건강보험공단 전국 지사 및 온라인</div><div class="proc-summary-item"><b>처리 기한</b>접수일부터 30일 이내 판정 원칙</div><div class="proc-summary-item"><b>법적 근거</b>「노인장기요양보험법」 제12조~제16조</div></div>`:""}</div><div class="proc-flow-container"><div style="font-size:15px;font-weight:800;color:var(--ink);">📋 ${heading}</div><div class="algorithm-flow-scroll"><div class="algorithm-flow ${kind}-flow" id="${kind}-algorithm-flow"></div></div><div class="algorithm-detail" id="${kind}-algorithm-detail" aria-live="polite"></div>${kind==="grade"?`<div class="section-block algorithm-supporting"><div class="section-block-title">📊 장기요양 인정조사 52개 평가항목 구성</div><table class="spec-table"><thead><tr><th style="width:130px">영역 구분</th><th style="width:80px">항목 수</th><th>주요 조사 내용</th></tr></thead><tbody><tr><td><b>신체기능</b></td><td>12항목</td><td>옷 입기, 세수, 양치, 목욕, 식사, 체위변경, 이동, 화장실 사용, 배뇨·배변 조절 등</td></tr><tr><td><b>인지기능</b></td><td>7항목</td><td>단기기억, 날짜·장소 지남력, 지시 이해, 상황 판단과 계산 등</td></tr><tr><td><b>행동변화</b></td><td>14항목</td><td>망상, 환각, 우울, 수면 변화, 배회, 길 잃음, 공격성, 물건 감추기 등</td></tr><tr><td><b>간호처치</b></td><td>9항목</td><td>기관지절개관, 흡인, 산소치료, 욕창, 경관영양, 도뇨관, 투석, 장루 관리 등</td></tr><tr><td><b>재활</b></td><td>10항목</td><td>상·하지 관절가동범위 제한 및 운동장애 여부</td></tr></tbody></table></div>`:`<div class="section-block algorithm-supporting"><div class="section-block-title">🏛️ 통합돌봄 3대 거버넌스 역할</div><table class="spec-table"><thead><tr><th style="width:160px">기관</th><th style="width:190px">역할</th><th>주요 업무</th></tr></thead><tbody><tr><td><b>보건복지부</b></td><td>제도 총괄·재정 지원</td><td>돌봄통합지원법 정책과 지침을 마련하고 제도 운영을 지원합니다.</td></tr><tr><td><b>지자체 (시·군·구)</b></td><td>지역 전달체계 컨트롤타워</td><td>전담조직 운영, 대상자 발굴·접수, 개인별지원계획 수립, 통합지원회의 운영과 서비스 연계를 총괄합니다.</td></tr><tr><td><b>국민건강보험공단</b></td><td>조사·보험 자원 연계 지원</td><td>통합판정조사와 건강보험 정보 연계를 지원하고 장기요양·재택의료 자원과 협력합니다.</td></tr></tbody></table></div>`}</div>`;
+    const flow=document.getElementById(`${kind}-algorithm-flow`), detail=document.getElementById(`${kind}-algorithm-detail`);
+    const showStep=idx=>{flow.querySelectorAll(".algorithm-node").forEach((n,i)=>{n.classList.toggle("selected",i===idx);n.setAttribute("aria-pressed",i===idx?"true":"false")});const step=steps[idx];detail.innerHTML=`<h3>${String(idx+1).padStart(2,"0")}. ${step.title}</h3>${step.body}<p><b>담당:</b> ${step.actor}</p>`};
+    steps.forEach((step,idx)=>{const b=document.createElement("button");b.type="button";b.className="algorithm-node";b.setAttribute("aria-pressed","false");b.dataset.step=String(idx+1);b.innerHTML=`<span class="step-num-badge">${String(idx+1).padStart(2,"0")}</span><span class="algorithm-node-label"><b>${step.title}</b><small>${step.short}</small></span>`;b.addEventListener("click",()=>showStep(idx));flow.appendChild(b)});
+    showStep(0);
+}
+
+function renderGradeDetail(id) {
+    const info = document.getElementById("information");
+    info.className = "info-area";
+
+    if (id === "all") {
+        info.innerHTML = `
+          <div class="info-head">
+            <div class="info-crumb"><span>노인장기요양보험 등급판정</span> › <span>판정등급 내용</span> › <span>전체 등급 비교 총괄</span></div>
+            <div class="info-title">노인장기요양보험 등급체계 총괄 비교</div>
+          </div>
+          <div class="proc-hero">
+            <div class="proc-hero-title"><span class="pill">2026년 기준</span>장기요양 1~5등급 및 인지지원등급 한눈에 보기</div>
+            <div class="proc-hero-desc">
+              심신의 기능상태 장애로 일상생활에서 도움이 필요한 정도에 따라 1~5등급 및 인지지원등급으로 구분됩니다.<br>
+              ※ 근거: 「노인장기요양보험법 시행령」 제7조 및 보건복지부고시 제2026-189호(2026.10.1 시행)
+            </div>
+          </div>
+          <table class="spec-table" style="margin-top:16px;">
+            <thead>
+              <tr>
+                <th style="width:105px;">등급</th>
+                <th style="width:115px;">인정점수</th>
+                <th>심신 상태 및 기능장애 수준</th>
+                <th style="width:135px;">월 한도액 (재가)</th>
+                <th style="width:130px;">이용 가능 급여</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="grade-badge grade-1">1등급</span></td><td><b>95점 이상</b></td><td>심신의 기능상태 장애로 일상생활에서 <b>전적으로</b> 다른 사람의 도움이 필요한 자 (스스로 거동 불가, 와상)</td><td><b>2,512,900원</b></td><td>재가급여 + 시설급여</td></tr>
+              <tr><td><span class="grade-badge grade-2">2등급</span></td><td><b>75점 ~ 95점 미만</b></td><td>심신의 기능상태 장애로 일상생활에서 <b>상당 부분</b> 다른 사람의 도움이 필요한 자 (휠체어 의존)</td><td><b>2,331,200원</b></td><td>재가급여 + 시설급여</td></tr>
+              <tr><td><span class="grade-badge grade-3">3등급</span></td><td><b>60점 ~ 75점 미만</b></td><td>심신의 기능상태 장애로 일상생활에서 <b>부분적으로</b> 다른 사람의 도움이 필요한 자 (실내 이동 일부 가능)</td><td><b>1,528,200원</b></td><td>재가급여 (시설 예외승인)</td></tr>
+              <tr><td><span class="grade-badge grade-4">4등급</span></td><td><b>51점 ~ 60점 미만</b></td><td>심신의 기능상태 장애로 일상생활에서 <b>일정 부분</b> 다른 사람의 도움이 필요한 자 (보행 보조기구 사용)</td><td><b>1,409,700원</b></td><td>재가급여 (시설 예외승인)</td></tr>
+              <tr><td><span class="grade-badge grade-5">5등급</span></td><td><b>45점 ~ 51점 미만</b></td><td>노인성 질병에 해당하는 <b>치매환자</b> (인지활동형 방문요양 및 주야간보호 인지특화형 이용)</td><td><b>1,208,900원</b></td><td>재가급여 (시설 예외승인)</td></tr>
+              <tr><td><span class="grade-badge grade-cogni">인지지원</span></td><td><b>45점 미만</b></td><td>45점 미만이나 <b>치매</b>가 확인된 자 (신체기능 양호하나 인지 저하 초기)</td><td><b>676,320원</b></td><td>주·야간보호 (인지특화형)</td></tr>
+            </tbody>
+          </table>
+          <div class="calc-note">
+            · 본인부담률: 재가급여 15%, 시설급여 20% (의료급여수급권자 0%, 감경대상자 6% 또는 9%)<br>
+            · 3~5등급 수급자의 시설 입소는 등급판정위원회의 사실확인(가족 돌봄 곤란, 주거환경 열악 등) 승인이 필요합니다.
+          </div>
+        `;
+        return;
+    }
+
+    const dataMap = {
+        "g1": { name: "1등급 (최중증)", badge: "grade-1", score: "95점 이상", desc: "일상생활에서 전적으로 다른 사람의 도움이 필요한 자", limit: "2,512,900원", copay: "376,935원", service: "재가급여 전체 (방문요양 종일 포함) + 노인요양시설(요양원) 입소", condition: "스스로 몸을 뒤척이거나 일어나 앉을 수 없으며, 식사·착탈의·배설 등 모든 일상생활을 전적으로 타인에게 의존하는 와상 상태입니다." },
+        "g2": { name: "2등급 (중증)", badge: "grade-2", score: "75점 이상 95점 미만", desc: "일상생활에서 상당 부분 다른 사람의 도움이 필요한 자", limit: "2,331,200원", copay: "349,680원", service: "재가급여 전체 + 노인요양시설(요양원) 입소", condition: "휠체어에 의존하며, 식사 보조, 옷 갈아입기, 화장실 이동 및 사용 시 상당한 부축과 도움이 필요한 상태입니다." },
+        "g3": { name: "3등급 (중등도)", badge: "grade-3", score: "60점 이상 75점 미만", desc: "일상생활에서 부분적으로 다른 사람의 도움이 필요한 자", limit: "1,528,200원", copay: "229,230원", service: "재가급여 원칙 (가족 돌봄 곤란 사유 시 시설 입소 가능)", condition: "실내에서 부축을 받아 서거나 걸을 수 있으나 외출, 목욕, 식사 준비 등에서 부분적인 도움이 반드시 필요한 상태입니다." },
+        "g4": { name: "4등급 (경증)", badge: "grade-4", score: "51점 이상 60점 미만", desc: "일상생활에서 일정 부분 다른 사람의 도움이 필요한 자", limit: "1,409,700원", copay: "211,455원", service: "재가급여 (주·야간보호, 방문요양, 방문목욕 등)", condition: "지팡이나 보행보조차를 이용해 실내 이동은 가능하나 청소, 세탁, 외출 동행 등 가사 및 일상 활동의 일정 부분에 도움이 필요한 상태입니다." },
+        "g5": { name: "5등급 (치매)", badge: "grade-5", score: "45점 이상 51점 미만", desc: "노인장기요양보험법령상 치매환자", limit: "1,208,900원", copay: "181,335원", service: "재가급여 (인지활동형 방문요양, 주·야간보호 치매전담형)", condition: "신체 기능은 비교적 양호할 수 있으나 기억력 감퇴, 지남력 장애, 판단력 저하 등 치매 증상으로 인지 자극 및 일상 케어가 필요한 상태입니다." },
+        "g_cogni": { name: "인지지원등급", badge: "grade-cogni", score: "45점 미만 치매환자", desc: "인정점수 45점 미만이나 치매가 확인된 자", limit: "676,320원", copay: "101,448원", service: "주·야간보호 인지특화형 프로그램 이용", condition: "신체활동은 스스로 가능하지만 경도인지장애 또는 초기 치매로 인지기능 악화 방지 훈련 및 안전 보호가 필요한 상태입니다." }
+    };
+
+    const g = dataMap[id];
+    info.innerHTML = `
+      <div class="info-head">
+        <div class="info-crumb"><span>노인장기요양보험 등급판정</span> › <span>판정등급 내용</span> › <span>${esc(g.name)}</span></div>
+        <div class="info-title">${esc(g.name)} 상세 기준</div>
+      </div>
+      <table class="info-table">
+        <tbody>
+          <tr><th>판정 점수</th><td><span class="grade-badge ${g.badge}">${esc(g.name)}</span> <b>${esc(g.score)}</b></td></tr>
+          <tr><th>기능장애 수준</th><td>${esc(g.desc)}</td></tr>
+          <tr><th>대표적 심신상태</th><td>${esc(g.condition)}</td></tr>
+          <tr><th>2026년 월 한도액</th><td><b>${esc(g.limit)}</b> (보건복지부고시 제2026-189호)</td></tr>
+          <tr><th>본인부담금 (15%)</th><td>일반 15% 기준 <b>${esc(g.copay)}</b> (경감대상 6%·9%, 기초수급자 0%)</td></tr>
+          <tr><th>이용 가능 급여</th><td>${esc(g.service)}</td></tr>
+          <tr><th>권장 서비스 조합</th><td>주·야간보호(데이케어) + 방문요양 + 복지용구(연 160만 원 한도 내) 조합 이용 권장</td></tr>
+        </tbody>
+      </table>
+    `;
+}
+
+/* ================= 통합돌봄 8단계 절차 설명 렌더러 ================= */
+function renderCareProcDiagram() {
+    const steps=[
+      {title:"대상자 신청 및 접수",actor:"읍·면·동 통합돌봄 창구",short:"본인·가족·이웃 등이 지원 신청",body:`<p>돌봄이 필요한 노인 본인, 가족, 이웃, 이·통장 등이 읍·면·동 행정복지센터 통합돌봄 전담창구에 신청합니다.</p><ul><li>접수 창구에서 대상자의 기본정보, 신청 경위와 현재 돌봄 상황을 확인합니다.</li><li>초기 상담으로 건강상태, 일상생활의 어려움, 주거환경과 본인·가족의 희망을 파악하고 통합지원 필요성을 검토합니다.</li><li>읍·면·동에서 바로 연계할 수 있는 서비스가 있는지 확인하고, 시·군·구 통합돌봄 전담조직 또는 관계기관으로 의뢰합니다.</li></ul>`},
+      {title:"대상자 발굴",actor:"지자체·건보공단·의료기관",short:"복지 사각지대와 퇴원환자 선제 발굴",body:`<p>돌봄 사각지대에 놓인 대상자를 빅데이터와 현장 연계를 통해 찾아냅니다.</p><ul><li>단전·단수, 공과금 체납 등 복지사각지대 발굴 정보를 활용해 위기가구를 확인합니다.</li><li>급성기·요양병원 퇴원지원실과 협력해 퇴원 후 돌봄 공백이 예상되는 대상자를 사전에 의뢰받습니다.</li><li>건보공단의 장기요양 등급외자(A·B·C), 노인맞춤돌봄 중점군 등 관계기관 정보를 연계합니다.</li><li>발굴된 대상자에게 연락하고 초기 상담을 진행해 통합지원 신청·조사로 연결합니다.</li></ul>`},
+      {title:"종합판정조사",actor:"지자체 전담팀·건보공단",short:"방문조사로 의료·돌봄 필요도 진단",body:`<p>전담 공무원과 공단 통합판정조사원이 거주지를 방문해 의료와 돌봄 필요도를 종합 진단합니다.</p><ul><li><b>수행팀:</b> 시·군·구 통합돌봄 전담팀과 국민건강보험공단 통합판정조사원이 협력해 가정방문을 진행합니다.</li><li><b>조사 도구:</b> 통합판정조사표를 활용해 의료 필요도(방문진료, 투약·건강관리 등)와 돌봄 필요도(신체수발, 일상생활, 가사 등)를 함께 확인합니다.</li><li>대상자의 기능상태, 가족·주거 여건, 기존 서비스 이용과 지역 내 자원 상황을 종합적으로 살핍니다.</li><li>조사 결과를 의료·돌봄 복합형, 의료 중심형, 돌봄 중심형, 예방·모니터링형 등으로 정리해 개인별 계획 수립에 활용합니다.</li></ul>`},
+      {title:"개인별지원계획 수립",actor:"시·군·구 통합돌봄 전담조직",short:"조사 결과를 바탕으로 맞춤형 계획 작성",body:`<p>시·군·구 통합돌봄 전담조직이 종합판정 결과를 바탕으로 개인별 맞춤형 지원계획을 수립합니다.</p><ul><li>종합판정 결과와 당사자의 욕구를 바탕으로 보건의료, 건강관리, 장기요양, 일상생활돌봄, 주거 등 5대 영역의 서비스를 조합합니다.</li><li>기존에 이용 중인 서비스와 중복·누락 여부를 확인하고, 공공·민간 자원의 제공 가능성과 시작 시기를 조정합니다.</li><li>대상자 및 보호자와 상담해 희망 서비스, 목표, 역할과 동의를 확인하고 개인별 지원계획에 반영합니다.</li></ul>`},
+      {title:"통합지원회의 심의",actor:"민·관 다학제 협의체",short:"지원계획과 서비스 연계안 검토·의결",body:`<p>지자체, 의료·복지 전문가, 보건소와 건보공단 등이 참여하는 통합지원회의에서 지원계획을 심의합니다.</p><ul><li><b>주관:</b> 시·군·구가 민·관 합동 다학제 전문가 회의를 운영합니다.</li><li><b>참여:</b> 의사, 간호사, 사회복지사, 보건소, 건보공단, 복지관 및 관련 서비스 기관 등이 참여할 수 있습니다.</li><li>개인별지원계획의 적정성과 대상자의 필요도를 검토하고 서비스 중복·누락을 조정합니다.</li><li>공공·민간 자원의 연계 가능성과 역할을 확인해 지원계획을 심의·의결합니다.</li></ul>`},
+      {title:"서비스 의뢰 및 연계 제공",actor:"의료·요양·복지 제공기관",short:"확정된 지원계획에 따라 서비스 개시",body:`<p>심의된 지원계획에 따라 각 분야 제공기관에 의뢰하고 지역사회 서비스를 시작합니다.</p><ul><li><b>보건의료:</b> 재택의료센터의 의사·간호사·사회복지사 방문진료와 퇴원 후 연속 관리를 연계합니다.</li><li><b>건강관리:</b> 보건소 방문건강관리, 만성질환 관리와 건강 모니터링을 연결합니다.</li><li><b>장기요양·일상돌봄:</b> 방문요양, 주·야간보호, 복지용구, 식사배달, 이동지원 등을 연계합니다.</li><li><b>주거:</b> 안심주택, 낙상 방지와 편의시설 설치 등 주거환경 개선을 연계할 수 있습니다.</li><li>의뢰 후 제공기관의 서비스 개시 여부와 대상자의 실제 이용 상황을 확인합니다.</li></ul>`},
+      {title:"모니터링 및 재평가",actor:"시·군·구 케어매니저",short:"서비스 이행과 건강상태 점검",body:`<p>케어매니저가 서비스 제공 상황과 대상자의 건강상태 변화를 지속적으로 확인합니다.</p><ul><li>정기 가정방문 또는 유선 연락으로 건강상태, 서비스 이행 여부와 만족도를 확인합니다.</li><li>서비스가 제공되지 않거나 새로운 욕구·위기 징후가 확인되면 관계기관과 즉시 조정합니다.</li><li>상태 호전·악화, 퇴원·입원 등 변화가 생기면 재평가하고 개인별지원계획을 변경해 통합지원회의에 다시 상정할 수 있습니다.</li></ul>`},
+      {title:"대상자 종결 및 사후관리",actor:"지자체 통합돌봄 전담팀",short:"목표 달성 후 종결하고 필요 시 재연계",body:`<p>돌봄 목표 달성, 시설 입소 또는 타 지역 전출 등으로 지원을 종결하고 필요한 사후관리를 이어갑니다.</p><ul><li>지원 목표 달성, 장기 입원·시설 입소, 타 지역 전출 등 종결 사유와 후속 지원 필요성을 확인합니다.</li><li>자립생활이 가능해지면 일반 복지·건강관리 체계로 전환하고, 시설 입소나 전출 시 관계기관에 필요한 정보를 연계합니다.</li><li>종결 후에도 주기적으로 안부를 확인하고 위기 재발 또는 상태 변화가 있으면 재신청·재연계를 안내합니다.</li></ul>`}
+    ];
+    renderAlgorithmFlow({kind:"care",crumb:"통합돌봄 절차",title:"지자체 중심 통합돌봄 8단계 추진 절차",heading:"통합돌봄 추진 8단계 알고리즘 순서도",pill:"2026.3.27 시행",desc:"지자체가 중심이 되어 신청·발굴부터 조사, 계획 수립, 서비스 제공과 사후관리까지 이어지는 절차입니다. 각 단계를 클릭하면 아래에서 상세 내용을 확인할 수 있습니다.",steps});
+}
+
+function renderCareContentDetail() {
+    const info = document.getElementById("information");
+    info.className = "info-area";
+    info.innerHTML = `
+      <div class="info-head">
+        <div class="info-crumb"><span>통합돌봄 제도 개요</span> › <span>통합돌봄 지원 내용</span> › <span>지원 내용</span></div>
+        <div class="info-title">통합돌봄 지원내용 (연계서비스 5대 영역 및 특화서비스)</div>
+      </div>
+      <div class="proc-hero">
+        <div class="proc-hero-title"><span class="pill">지원 체계</span>연계서비스 5대 영역과 지역 특화서비스</div>
+        <div class="proc-hero-desc">
+          「의료·요양 등 지역돌봄의 통합지원에 관한 법률」 및 보건복지부 공식 기준 통합돌봄 지원체계입니다.<br>
+          지자체가 컨트롤타워가 되어 <b>보건의료, 건강관리, 장기요양, 일상생활돌봄, 기타</b>의 5대 영역 서비스를 살던 곳(Aging in Place)에서 하나로 묶어 제공합니다.
+        </div>
+        <div class="proc-summary-grid">
+          <div class="proc-summary-item"><b>법적 근거</b>「의료·요양 등 지역돌봄의 통합지원에 관한 법률」 (2026.3.27 시행)</div>
+          <div class="proc-summary-item"><b>재정 규모</b>2026년부터 5년간 총 <b>9,400억 원</b> 집중 투입</div>
+          <div class="proc-summary-item"><b>우선 지원 대상</b>장기요양 재가급여자(1~5등급·인지지원), 등급외자, 노인맞춤돌봄 중점군, 퇴원환자</div>
+          <div class="proc-summary-item"><b>핵심 철학</b>"치료(Cure)와 돌봄(Care)의 교집합을 지자체가 하나로 연계"</div>
+        </div>
+      </div>
+
+      <div class="proc-flow-container">
+        <div style="font-size:15px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px;">
+          <span>🌐 연계서비스 5대 영역 상세 분류표</span>
+        </div>
+
+        <div class="area-grid">
+          <div class="area-card cure">
+            <div class="area-title"><span>① 보건의료 영역</span><span class="chip kind-제정">치료 축 연계</span></div>
+            <ul class="area-list">
+              <li class="area-item"><b>일차의료 방문진료 수가 시범사업:</b> 거동불편 노인 가정에 의사(의과·한의) 방문진료</li>
+              <li class="area-item"><b>치매관리 서비스:</b> 치매안심센터 조기검진, 쉼터 인지재활, 가족 지원</li>
+              <li class="area-item"><b>정신건강복지센터 연계:</b> 노년기 우울증, 불안, 자살예방 상담 및 치료비 지원</li>
+              <li class="area-item"><b>일차의료 만성질환관리:</b> 동네의원 중심 고혈압·당뇨병 지속 케어플랜 및 모니터링</li>
+              <li class="area-item"><b>치매관리주치의 시범사업:</b> 치매 전문의사의 주기적 방문 및 전문적 투약·치료 관리</li>
+              <li class="area-item"><b>퇴원환자 지원 연계사업 ⭐:</b> 급성기·요양병원 퇴원 환자가 가정 복귀 시 돌봄 단절 없이 원스톱 연계</li>
+            </ul>
+          </div>
+
+          <div class="area-card health">
+            <div class="area-title"><span>② 건강관리 영역</span><span class="chip" style="background:#eaf5ea;color:#1e7a46;border-color:#b7e3c6;">예방 및 유지</span></div>
+            <ul class="area-list">
+              <li class="area-item"><b>방문건강관리사업 (보건소):</b> 전담 간호사 가정방문 건강측정 및 맞춤 건강지도</li>
+              <li class="area-item"><b>건강백세운동교실:</b> 경로당·복지관 중심 낙상예방 체조, 관절 스트레칭, 근력 운동</li>
+              <li class="area-item"><b>AI·IoT 기반 어르신 건강관리:</b> 스마트밴드, 블루투스 혈압·혈당계 활용 비대면 모니터링</li>
+              <li class="area-item"><b>다제약물관리사업:</b> 약사 가정방문 10개 이상 중복 복용 약물 점검 및 부작용 예방</li>
+              <li class="area-item"><b>만성질환 건강지원:</b> 보건소 고혈압·당뇨병 등록관리 및 식이상담</li>
+            </ul>
+          </div>
+
+          <div class="area-card ltc">
+            <div class="area-title"><span>③ 장기요양 영역</span><span class="chip kind-전부개정">돌봄 축 연계</span></div>
+            <ul class="area-list">
+              <li class="area-item"><b>장기요양 재가급여:</b> 방문요양(종일 포함), 방문목욕, 방문간호, 주·야간보호, 단기보호 지원</li>
+              <li class="area-item"><b>주·야간보호기관 내 단기보호:</b> 가족 긴급 부재 시 주야간보호센터 단기 숙박 보호 제공</li>
+              <li class="area-item"><b>재택의료센터 시범사업 ⭐:</b> 전국 229개 시군구 <b>422개소</b> 확충(2026.2), 의사+간호사+복지사 팀 방문</li>
+              <li class="area-item"><b>통합재가서비스:</b> 단일 기관에서 방문요양·간호·목욕·주야간보호 유기적 통합 제공</li>
+              <li class="area-item"><b>가족휴가제:</b> 치매가족 부양부담 완화를 위한 단기보호 및 종일방문요양 지원</li>
+            </ul>
+          </div>
+
+          <div class="area-card life">
+            <div class="area-title"><span>④ 일상생활돌봄 영역</span><span class="chip" style="background:#f3ebf9;color:#6b46c1;border-color:#d6bcfa;">생활 밀착</span></div>
+            <ul class="area-list">
+              <li class="area-item"><b>노인맞춤돌봄서비스:</b> 생활지원사 가정방문 안전안부 확인, 사회참여, 가사활동 지원</li>
+              <li class="area-item"><b>독거노인·장애인 응급안전안심서비스:</b> 댁내 ICT 화재센서, 활동센서, 119 응급호출기 24시간 모니터링</li>
+              <li class="area-item"><b>긴급돌봄 지원사업 ⭐:</b> 주돌봄자 입원·사고 시 최대 72시간 일시적 간병 및 가사돌봄 제공</li>
+            </ul>
+          </div>
+
+          <div class="area-card etc">
+            <div class="area-title"><span>⑤ 기타 영역</span><span class="chip">복합 복지</span></div>
+            <ul class="area-list">
+              <li class="area-item"><b>고독사 예방 및 관리:</b> 사회적 고립 위험 노인 조기 발굴, 말벗 지원, 지역 커뮤니티 연결</li>
+              <li class="area-item"><b>지자체 통합사례관리:</b> 복합 위기가구 대상 공공·민간 복지자원 총괄 연계</li>
+              <li class="area-item"><b>일상돌봄서비스:</b> 청·중장년 및 돌봄필요 노인 대상 맞춤형 가사·간병 지원</li>
+              <li class="area-item"><b>재가의료급여 사업:</b> 장기입원 의료급여 수급권자 퇴원 후 재가정착금 및 밀착 돌봄 연계</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-title">🏡 지자체 맞춤형 지역 특화서비스 5대 영역</div>
+          <table class="spec-table">
+            <thead>
+              <tr><th style="width:170px;">특화 영역</th><th>주요 서비스 내용 및 특징</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>방문의료 지원사업</b></td><td>지역 의사회·보건의료원과 협력하여 거동불편 노인 가정에 왕진 및 간호처치를 제공하는 지역 밀착형 방문의료</td></tr>
+              <tr><td><b>퇴원환자 지역사회 연계</b></td><td>급성기·요양병원 퇴원 전 지자체 전담인력이 병원을 방문하여 퇴원 즉시 필요한 재가돌봄 및 방문진료를 연결하는 핫라인 체계</td></tr>
+              <tr><td><b>일상생활돌봄 지원</b></td><td>영양 균형 맞춤형 도시락 배달, 병원 진료 동행, 장보기 이동 편의 지원 등 생활 밀착형 틈새 서비스</td></tr>
+              <tr><td><b>주거환경 개선</b></td><td>가정 내 낙상사고 방지를 위한 문턱 제거, 화장실·복도 안전손잡이 설치, 미끄럼 방지 타일 시공, 조명 개선</td></tr>
+              <tr><td><b>케어안심주택</b></td><td>LH 등과 협력하여 의료·돌봄 서비스가 통합 결합된 고령자 맞춤형 복지안심주택 공급</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section-block" style="background:#f0f7fc;border-color:var(--accent-line);">
+          <div class="section-block-title" style="color:var(--accent);">💡 사업적 통찰 및 핵심 메시지</div>
+          <div style="font-size:13px;line-height:1.7;color:var(--ink);">
+            <b>"보건의료 · 건강관리 · 장기요양 · 일상생활돌봄 · 기타 — 5대 영역을 지자체가 하나로 연계"</b><br>
+            · 지금까지는 치료(건강보험)와 돌봄(장기요양)이 서로 분리되어 운영되어, 치료가 끝났는데도 돌봄이 없어 병원에 머무는 '사회적 입원'이 빈번했습니다.<br>
+            · 통합돌봄은 지자체가 통합지원 컨트롤타워가 되어 5대 영역의 공공·민간 서비스를 하나로 엮음으로써, 불필요한 시설·병원 입소를 줄이고 살던 집에서 존엄한 노후(Aging in Place)를 누리게 합니다.<br>
+            · 향후 시니어 사업의 중심은 요양원이나 병원 단독 모델에서 <b>재택의료센터, 방문돌봄, 주거개조, 통합재가플랫폼 등 '치료와 돌봄의 교집합' 영역</b>으로 급속히 재편될 것입니다.
+          </div>
+        </div>
+      </div>
+    `;
+}
+
+
+
+/* Keep mobile navigation columns together in a vertical, fully expanded list. */
+(function stackMobileNavigationColumns(){
+  const app=document.querySelector(".app");
+  if(!app) return;
+  const columns=[...app.querySelectorAll(":scope > .column-1, :scope > .column-2, :scope > .column-3")];
+  if(columns.length!==3) return;
+  const nav=document.createElement("div");
+  nav.className="mobile-nav-columns";
+  app.insertBefore(nav,columns[0]);
+  columns.forEach(column=>nav.appendChild(column));
+})();
+</script>
+</body>
+</html>
